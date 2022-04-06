@@ -1,0 +1,9 @@
+{
+  "type": "mssql",
+  "host": "localhost",
+  "port": 58099,
+  "username": "admin",
+  "password": "admin",
+  "database": "ProductShop",
+  "entities": ["dist/**/*.entity{.ts,.js}"]
+}
