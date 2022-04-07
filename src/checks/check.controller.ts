@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import { CreateOrUpdateCheckDto } from './dto/createUpdate-check.dto';
+import { CreateCheckDto } from './dto/create-check.dto';
 import { CheckService } from './check.service';
 
 @Controller('check')
@@ -11,8 +11,8 @@ export class CheckController {
     return this.checkService.getAll();
   }
 
-  // @Post()
-  // create(@Body() product: CreateProductDto) {
-  //   return this.productService.create(product);
-  // }
+  @Post()
+  create(@Body() product: CreateCheckDto) {
+    return this.checkService.create(product);
+  }
 }
