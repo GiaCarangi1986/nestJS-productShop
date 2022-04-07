@@ -26,23 +26,6 @@ import { Manufacturer } from './entities/Manufacturer';
   imports: [
     ProductsModule,
     CheckModule,
-    TypeOrmModule.forFeature([
-      BonusCard,
-      BonusCardOwner,
-      Gender,
-      User,
-      Role,
-      WriteOffAct,
-      Product,
-      CheckLine,
-      DeliveryLine,
-      Delivery,
-      Category,
-      MeasurementUnits,
-      Sale,
-      SaleKinds,
-      Manufacturer,
-    ]),
     TypeOrmModule.forRoot({
       type: 'mssql',
       host: 'localhost',
