@@ -1,4 +1,4 @@
-export class ChecklLineCreateDto {
+export class CheckLineCreateDto {
   readonly productCount: number;
   readonly productId: number;
   readonly oldProduct: boolean;

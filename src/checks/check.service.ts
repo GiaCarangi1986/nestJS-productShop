@@ -9,7 +9,8 @@ import { BonusCardService } from 'src/bonusCard/bonusCard.service';
 import { UpdateBonusCardDto } from 'src/bonusCard/dto/update-bonusCard.dto';
 
 import { CheckLineService } from 'src/checkLines/checkLines.service';
-import { ChecklLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
+import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
+import { CheckTableLineCreateDto } from 'src/checkLines/dto/createTable-checkLine.dto';
 
 @Injectable()
 export class CheckService {
@@ -43,10 +44,12 @@ export class CheckService {
     };
     const createdCheck = await this.checkRepository.create(check);
 
-    const checkLines: ChecklLineCreateDto[] = [];
-    product.checkLines.map((line) => {
-      const updatedLine = line;
-      updatedLine.checkId = createdCheck.id;
+    const checkLines: CheckLineCreateDto[] = [];
+    product.checkLines.map((line: CheckTableLineCreateDto) => {
+      const updatedLine: CheckLineCreateDto = {
+        ...line,
+        checkId: createdCheck.id,
+      };
       checkLines.push(updatedLine);
     });
     this.checkLineService.createCheckLinesArr(checkLines);

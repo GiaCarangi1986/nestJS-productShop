@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ChecklLineCreateDto } from './dto/create-checkLine.dto';
+import { CheckLineCreateDto } from './dto/create-checkLine.dto';
 import { CheckLine } from '../entities/CheckLine';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class CheckLineService {
     return checkLines.filter((line) => line.checkFk.id === checkFk);
   }
 
-  async createCheckLinesArr(checkLineArray: ChecklLineCreateDto[]) {
+  async createCheckLinesArr(checkLineArray: CheckLineCreateDto[]) {
     checkLineArray.forEach(async (line) => {
       this.checkLineRepository.create(line);
     });

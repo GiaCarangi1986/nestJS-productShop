@@ -8,4 +8,4 @@ import { CheckLine } from 'src/entities/CheckLine';
   providers: [CheckLineService],
   controllers: [],
 })
-export class CheckModule {}
+export class CheckLineModule {}

@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/product.module';
 import { CheckModule } from './checks/check.module';
+import { CheckLineModule } from './checkLines/checkLines.module';
+import { BonusCardModule } from './bonusCard/bonusCard.module';
 
 import { Check } from './entities/Check';
 import { BonusCard } from './entities/BonusCard';
@@ -26,6 +28,8 @@ import { Manufacturer } from './entities/Manufacturer';
   imports: [
     ProductsModule,
     CheckModule,
+    CheckLineModule,
+    BonusCardModule,
     TypeOrmModule.forRoot({
       type: 'mssql',
       host: 'localhost',
