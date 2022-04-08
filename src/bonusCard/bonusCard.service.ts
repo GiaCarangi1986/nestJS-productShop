@@ -12,7 +12,7 @@ export class BonusCardService {
   ) {}
 
   async updateBonusCard(bonusCard: UpdateBonusCardDto) {
-    this.bonusCardRepository.update(bonusCard.id, {
+    await this.bonusCardRepository.update(bonusCard.id, {
       bonusCount: bonusCard.bonusCount,
     });
   }

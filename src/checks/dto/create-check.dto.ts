@@ -2,9 +2,9 @@ import { CheckTableLineCreateDto } from 'src/checkLines/dto/createTable-checkLin
 
 export class CreateCheckDto {
   readonly bonusCount: number;
-  readonly bonusCardId: number;
+  readonly bonusCardId: number | null;
   readonly changedCheck: boolean;
-  readonly dateTime: Date;
+  readonly dateTime: Date | null;
   readonly userId: number;
   readonly checkLines: Array<CheckTableLineCreateDto>;
   readonly paid: boolean;

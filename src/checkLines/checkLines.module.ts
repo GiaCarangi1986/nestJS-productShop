@@ -7,5 +7,6 @@ import { CheckLine } from 'src/entities/CheckLine';
   imports: [TypeOrmModule.forFeature([CheckLine])],
   providers: [CheckLineService],
   controllers: [],
+  exports: [CheckLineService],
 })
 export class CheckLineModule {}

@@ -42,7 +42,8 @@ export class CheckService {
       parentCheckId: product.parentCheck,
       totalSum: product.totalSum,
     };
-    const createdCheck = await this.checkRepository.create(check);
+    let createdCheck = this.checkRepository.create(check);
+    createdCheck = await this.checkRepository.save(createdCheck);
 
     const checkLines: CheckLineCreateDto[] = [];
     product.checkLines.map((line: CheckTableLineCreateDto) => {

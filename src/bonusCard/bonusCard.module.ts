@@ -7,5 +7,6 @@ import { BonusCard } from '../entities/BonusCard';
   imports: [TypeOrmModule.forFeature([BonusCard])],
   providers: [BonusCardService],
   controllers: [],
+  exports: [BonusCardService],
 })
 export class BonusCardModule {}
