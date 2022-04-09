@@ -33,21 +33,21 @@ export class CheckService {
   async updateEdited() {}
 
   async create(checkData: CreateCheckDto) {
-    const bonusCardForUpdate: UpdateBonusCardDto = {
-      bonusCount: checkData.totalSum ? Math.floor(checkData.totalSum * 100) / 100,
-      id: checkData.bonusCardFK,
-    };
+    let bonusCard: BonusCard = null;
 
+    if (checkData.bonusCardFK) {
+      const bonusCardForUpdate: UpdateBonusCardDto = {
+        bonusCount: checkData.totalSum
+          ? Math.round((checkData.totalSum / 100) * 100) / 100
+          : 0,
+        id: checkData.bonusCardFK,
+      };
+      this.bonusCardService.update(bonusCardForUpdate);
 
-    let bonusCardUp; // проверить, что update вернет
-    this.bonusCardService
-      .update(bonusCardForUpdate)
-      .then((res) => (bonusCardUp = res));
-
-    let bonusCard: BonusCard;
-    this.bonusCardService
-      .findById(checkData.bonusCardFK)
-      .then((res) => (bonusCard = res));
+      this.bonusCardService
+        .findById(checkData.bonusCardFK)
+        .then((res) => (bonusCard = res));
+    }
 
     let user: User;
     this.userService.findById(checkData.userFK).then((res) => (user = res));

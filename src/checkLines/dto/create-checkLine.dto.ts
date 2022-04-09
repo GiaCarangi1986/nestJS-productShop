@@ -1,7 +1,10 @@
+import { Product } from '../../entities/Product';
+import { Check } from '../../entities/Check';
+
 export class CheckLineCreateDto {
   readonly productCount: number;
-  readonly productId: number;
+  readonly productFK: Product;
   readonly oldProduct: boolean;
   readonly price: number;
-  checkId: number; // id, который вернется после создания чека
+  checkFK: Check; // id, который вернется после создания чека
 }

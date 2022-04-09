@@ -6,8 +6,8 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Delivery } from "./Delivery";
 import { Product } from "./Product";
+import { Delivery } from "./Delivery";
 
 @Index("PK_DeliveryLine", ["id"], { unique: true })
 @Entity("DeliveryLine", { schema: "dbo" })
@@ -21,11 +21,11 @@ export class DeliveryLine {
   @Column("decimal", { name: "priceBuy", precision: 10, scale: 2 })
   priceBuy: number;
 
-  @ManyToOne(() => Delivery, (delivery) => delivery.deliveryLines)
-  @JoinColumn([{ name: "deliveryFK", referencedColumnName: "id" }])
-  deliveryFk: Delivery;
-
   @ManyToOne(() => Product, (product) => product.deliveryLines)
   @JoinColumn([{ name: "productFK", referencedColumnName: "id" }])
   productFk: Product;
+
+  @ManyToOne(() => Delivery, (delivery) => delivery.deliveryLines)
+  @JoinColumn([{ name: "deliveryFK", referencedColumnName: "id" }])
+  deliveryFk: Delivery;
 }

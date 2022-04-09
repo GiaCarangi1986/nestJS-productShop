@@ -11,8 +11,12 @@ export class BonusCardService {
     private bonusCardRepository: Repository<BonusCard>,
   ) {}
 
-  async updateBonusCard(bonusCard: UpdateBonusCardDto) {
-    await this.bonusCardRepository.update(bonusCard.id, {
+  async findById(id: number) {
+    return await this.bonusCardRepository.findOneOrFail(id);
+  }
+
+  async update(bonusCard: UpdateBonusCardDto) {
+    return await this.bonusCardRepository.update(bonusCard.id, {
       bonusCount: bonusCard.bonusCount,
     });
   }

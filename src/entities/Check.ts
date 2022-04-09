@@ -7,8 +7,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { BonusCard } from './BonusCard';
 import { User } from './User';
+import { BonusCard } from './BonusCard';
 import { CheckLine } from './CheckLine';
 
 @Index('PK_Check', ['id'], { unique: true })
@@ -39,13 +39,13 @@ export class Check {
   @OneToMany(() => Check, (check) => check.parentCheck)
   checks: Check[];
 
-  @ManyToOne(() => BonusCard, (bonusCard) => bonusCard.checks)
-  @JoinColumn([{ name: 'bonusCardFK', referencedColumnName: 'id' }])
-  bonusCardFk: BonusCard;
-
   @ManyToOne(() => User, (user) => user.checks)
   @JoinColumn([{ name: 'userFK', referencedColumnName: 'id' }])
   userFk: User;
+
+  @ManyToOne(() => BonusCard, (bonusCard) => bonusCard.checks)
+  @JoinColumn([{ name: 'bonusCardFK', referencedColumnName: 'id' }])
+  bonusCardFk: BonusCard;
 
   @OneToMany(() => CheckLine, (checkLine) => checkLine.checkFk)
   checkLines: CheckLine[];

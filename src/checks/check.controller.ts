@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param } from '@nestjs/common';
 import { CreateCheckDto } from './dto/create-check.dto';
+import { UpdateEditedCheckDto } from './dto/updateEdited-check.dto';
 import { CheckService } from './check.service';
 
 @Controller('check')
@@ -12,7 +13,15 @@ export class CheckController {
   }
 
   @Post()
-  create(@Body() product: CreateCheckDto) {
-    return this.checkService.create(product);
+  create(@Body() checkData: CreateCheckDto) {
+    return this.checkService.create(checkData);
+  }
+
+  @Put(':id')
+  updateEdited(
+    @Param('id') id: number,
+    @Body() parentId: UpdateEditedCheckDto,
+  ) {
+    return `This action updates a #${id} cat, ${parentId.parentCheckId}`;
   }
 }

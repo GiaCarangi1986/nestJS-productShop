@@ -6,6 +6,7 @@ import { ProductsModule } from './products/product.module';
 import { CheckModule } from './checks/check.module';
 import { CheckLineModule } from './checkLines/checkLines.module';
 import { BonusCardModule } from './bonusCard/bonusCard.module';
+import { UserModule } from './users/users.module';
 
 import { Check } from './entities/Check';
 import { BonusCard } from './entities/BonusCard';
@@ -26,10 +27,6 @@ import { Manufacturer } from './entities/Manufacturer';
 
 @Module({
   imports: [
-    ProductsModule,
-    CheckModule,
-    CheckLineModule,
-    BonusCardModule,
     TypeOrmModule.forRoot({
       type: 'mssql',
       host: 'localhost',
@@ -57,6 +54,11 @@ import { Manufacturer } from './entities/Manufacturer';
       ],
       autoLoadEntities: true,
     }),
+    ProductsModule,
+    CheckModule,
+    CheckLineModule,
+    BonusCardModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
