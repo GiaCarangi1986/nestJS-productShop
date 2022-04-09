@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { CreateTableCheckDto } from './dto/createTable-check.dto';
 import { Check } from '../entities/Check';
+import { BonusCard } from '../entities/BonusCard';
+import { User } from '../entities/User';
 
 import { BonusCardService } from 'src/bonusCard/bonusCard.service';
 import { UpdateBonusCardDto } from 'src/bonusCard/dto/update-bonusCard.dto';
@@ -12,6 +14,8 @@ import { CheckLineService } from 'src/checkLines/checkLines.service';
 import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
 import { CheckTableLineCreateDto } from 'src/checkLines/dto/createTable-checkLine.dto';
 
+import { UserService } from 'src/users/users.service';
+
 @Injectable()
 export class CheckService {
   constructor(
@@ -19,42 +23,59 @@ export class CheckService {
     private checkRepository: Repository<Check>,
     private readonly bonusCardService: BonusCardService,
     private readonly checkLineService: CheckLineService,
+    private readonly userService: UserService,
   ) {}
 
   async getAll(): Promise<Check[]> {
     return this.checkRepository.find();
   }
 
-  async create(product: CreateCheckDto) {
-    const bonusCard: UpdateBonusCardDto = {
-      bonusCount: product.bonusCount,
-      id: product.bonusCardId,
+  async updateEdited() {}
+
+  async create(checkData: CreateCheckDto) {
+    const bonusCardForUpdate: UpdateBonusCardDto = {
+      bonusCount: checkData.totalSum ? Math.floor(checkData.totalSum * 100) / 100,
+      id: checkData.bonusCardFK,
     };
-    this.bonusCardService.updateBonusCard(bonusCard);
+
+
+    let bonusCardUp; // проверить, что update вернет
+    this.bonusCardService
+      .update(bonusCardForUpdate)
+      .then((res) => (bonusCardUp = res));
+
+    let bonusCard: BonusCard;
+    this.bonusCardService
+      .findById(checkData.bonusCardFK)
+      .then((res) => (bonusCard = res));
+
+    let user: User;
+    this.userService.findById(checkData.userFK).then((res) => (user = res));
 
     const check: CreateTableCheckDto = {
-      bonusCount: product.bonusCount,
-      bonusCardId: product.bonusCardId,
-      changedCheck: product.changedCheck,
-      dateTime: product.dateTime,
-      userId: product.userId,
-      paid: product.paid,
-      parentCheckId: product.parentCheck,
-      totalSum: product.totalSum,
+      bonusCount: checkData.bonusCount,
+      bonusCardFK: bonusCard,
+      changedCheck: checkData.changedCheck,
+      dateTime: new Date(checkData.dateTime),
+      userFK: user,
+      paid: checkData.paid,
+      parentCheckId: null,
+      totalSum: checkData.totalSum,
     };
     let createdCheck = this.checkRepository.create(check);
     createdCheck = await this.checkRepository.save(createdCheck);
 
     const checkLines: CheckLineCreateDto[] = [];
-    product.checkLines.map((line: CheckTableLineCreateDto) => {
+    checkData.checkLines.forEach((line: CheckTableLineCreateDto) => {
+      // я хз, мб надо еще Product где то доставать тащить
       const updatedLine: CheckLineCreateDto = {
         ...line,
-        checkId: createdCheck.id,
+        checkFK: createdCheck,
       };
       checkLines.push(updatedLine);
     });
     this.checkLineService.createCheckLinesArr(checkLines);
 
-    return product;
+    return checkData;
   }
 }
