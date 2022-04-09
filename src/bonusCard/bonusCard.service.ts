@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UpdateBonusCardDto } from './dto/update-bonusCard.dto';
-import { BonusCard } from 'src/entities/BonusCard';
+import { BonusCard } from '../entities/BonusCard';
 
 @Injectable()
 export class BonusCardService {
@@ -11,13 +10,16 @@ export class BonusCardService {
     private bonusCardRepository: Repository<BonusCard>,
   ) {}
 
-  async findById(id: number) {
-    return await this.bonusCardRepository.findOneOrFail(id);
+  async findById(id: number): Promise<BonusCard> {
+    const data = await this.bonusCardRepository.findOne(id);
+    return data;
   }
 
-  async update(bonusCard: UpdateBonusCardDto) {
-    return await this.bonusCardRepository.update(bonusCard.id, {
-      bonusCount: bonusCard.bonusCount,
+  async update(id: number, newBonus: number, usedBonus: number) {
+    let card: BonusCard;
+    await this.findById(id).then((res) => (card = res));
+    await this.bonusCardRepository.update(id, {
+      bonusCount: card.bonusCount + newBonus - usedBonus,
     });
   }
 }

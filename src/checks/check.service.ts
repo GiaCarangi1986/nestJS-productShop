@@ -8,7 +8,6 @@ import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
 
 import { BonusCardService } from 'src/bonusCard/bonusCard.service';
-import { UpdateBonusCardDto } from 'src/bonusCard/dto/update-bonusCard.dto';
 
 import { CheckLineService } from 'src/checkLines/checkLines.service';
 import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
@@ -36,15 +35,15 @@ export class CheckService {
     let bonusCard: BonusCard = null;
 
     if (checkData.bonusCardFK) {
-      const bonusCardForUpdate: UpdateBonusCardDto = {
-        bonusCount: checkData.totalSum
+      await this.bonusCardService.update(
+        checkData.bonusCardFK,
+        checkData.totalSum
           ? Math.round((checkData.totalSum / 100) * 100) / 100
           : 0,
-        id: checkData.bonusCardFK,
-      };
-      this.bonusCardService.update(bonusCardForUpdate);
+        checkData.bonusCount,
+      );
 
-      this.bonusCardService
+      await this.bonusCardService
         .findById(checkData.bonusCardFK)
         .then((res) => (bonusCard = res));
     }
