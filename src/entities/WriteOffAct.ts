@@ -5,27 +5,31 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { User } from "./User";
-import { Product } from "./Product";
+} from 'typeorm';
+import { User } from './User';
+import { Product } from './Product';
 
-@Index("PK_WriteOffAct", ["id"], { unique: true })
-@Entity("WriteOffAct", { schema: "dbo" })
+@Index('PK_WriteOffAct', ['id'], { unique: true })
+@Entity('WriteOffAct', { schema: 'dbo' })
 export class WriteOffAct {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("int", { name: "productCount" })
+  @Column('int', { name: 'productCount' })
   productCount: number;
 
-  @Column("datetime", { name: "dateTimeWriteOff" })
+  @Column('datetime', { name: 'dateTimeWriteOff' })
   dateTimeWriteOff: Date;
 
-  @ManyToOne(() => User, (user) => user.writeOffActs)
-  @JoinColumn([{ name: "userFK", referencedColumnName: "id" }])
-  userFk: User;
+  @ManyToOne(() => User, (user) => user.writeOffActs, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'userFK', referencedColumnName: 'id' }])
+  userFK: User;
 
-  @ManyToOne(() => Product, (product) => product.writeOffActs)
-  @JoinColumn([{ name: "productFK", referencedColumnName: "id" }])
-  productFk: Product;
+  @ManyToOne(() => Product, (product) => product.writeOffActs, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'productFK', referencedColumnName: 'id' }])
+  productFK: Product;
 }

@@ -5,30 +5,34 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Product } from "./Product";
-import { Check } from "./Check";
+} from 'typeorm';
+import { Product } from './Product';
+import { Check } from './Check';
 
-@Index("PK_CheckLine", ["id"], { unique: true })
-@Entity("CheckLine", { schema: "dbo" })
+@Index('PK_CheckLine', ['id'], { unique: true })
+@Entity('CheckLine', { schema: 'dbo' })
 export class CheckLine {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("int", { name: "productCount" })
+  @Column('int', { name: 'productCount' })
   productCount: number;
 
-  @Column("decimal", { name: "price", precision: 10, scale: 2 })
+  @Column('decimal', { name: 'price', precision: 10, scale: 2 })
   price: number;
 
-  @Column("bit", { name: "oldProduct" })
+  @Column('bit', { name: 'oldProduct' })
   oldProduct: boolean;
 
-  @ManyToOne(() => Product, (product) => product.checkLines)
-  @JoinColumn([{ name: "productFK", referencedColumnName: "id" }])
-  productFk: Product;
+  @ManyToOne(() => Product, (product) => product.checkLines, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'productFK', referencedColumnName: 'id' }])
+  productFK: Product;
 
-  @ManyToOne(() => Check, (check) => check.checkLines)
-  @JoinColumn([{ name: "checkFK", referencedColumnName: "id" }])
-  checkFk: Check;
+  @ManyToOne(() => Check, (check) => check.checkLines, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'checkFK', referencedColumnName: 'id' }])
+  checkFK: Check;
 }

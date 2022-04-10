@@ -18,8 +18,12 @@ export class BonusCardService {
   async update(id: number, newBonus: number, usedBonus: number) {
     let card: BonusCard;
     await this.findById(id).then((res) => (card = res));
+    const newSum =
+      card.bonusCount + newBonus - usedBonus > 0
+        ? card.bonusCount + newBonus - usedBonus
+        : 0;
     await this.bonusCardRepository.update(id, {
-      bonusCount: card.bonusCount + newBonus - usedBonus,
+      bonusCount: newSum,
     });
   }
 }

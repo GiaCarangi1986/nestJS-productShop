@@ -4,18 +4,18 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Product } from "./Product";
+} from 'typeorm';
+import { Product } from './Product';
 
-@Index("PK_Category", ["id"], { unique: true })
-@Entity("Category", { schema: "dbo" })
+@Index('PK_Category', ['id'], { unique: true })
+@Entity('Category', { schema: 'dbo' })
 export class Category {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("varchar", { name: "title", length: 100 })
+  @Column('varchar', { name: 'title', length: 100 })
   title: string;
 
-  @OneToMany(() => Product, (product) => product.categoryFk)
+  @OneToMany(() => Product, (product) => product.categoryFK)
   products: Product[];
 }

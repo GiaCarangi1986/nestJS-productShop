@@ -6,58 +6,67 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { CheckLine } from "./CheckLine";
-import { DeliveryLine } from "./DeliveryLine";
-import { Category } from "./Category";
-import { MeasurementUnits } from "./MeasurementUnits";
-import { Sale } from "./Sale";
-import { Manufacturer } from "./Manufacturer";
-import { WriteOffAct } from "./WriteOffAct";
+} from 'typeorm';
+import { CheckLine } from './CheckLine';
+import { DeliveryLine } from './DeliveryLine';
+import { Category } from './Category';
+import { MeasurementUnits } from './MeasurementUnits';
+import { Sale } from './Sale';
+import { Manufacturer } from './Manufacturer';
+import { WriteOffAct } from './WriteOffAct';
 
-@Index("PK_Product", ["id"], { unique: true })
-@Entity("Product", { schema: "dbo" })
+@Index('PK_Product', ['id'], { unique: true })
+@Entity('Product', { schema: 'dbo' })
 export class Product {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("varchar", { name: "title", length: 150 })
+  @Column('varchar', { name: 'title', length: 150 })
   title: string;
 
-  @Column("decimal", { name: "priceNow", precision: 10, scale: 2 })
+  @Column('decimal', { name: 'priceNow', precision: 10, scale: 2 })
   priceNow: number;
 
-  @Column("bit", { name: "isArchive" })
+  @Column('bit', { name: 'isArchive' })
   isArchive: boolean;
 
-  @Column("bit", { name: "maybeOld" })
+  @Column('bit', { name: 'maybeOld' })
   maybeOld: boolean;
 
-  @OneToMany(() => CheckLine, (checkLine) => checkLine.productFk)
+  @OneToMany(() => CheckLine, (checkLine) => checkLine.productFK)
   checkLines: CheckLine[];
 
-  @OneToMany(() => DeliveryLine, (deliveryLine) => deliveryLine.productFk)
+  @OneToMany(() => DeliveryLine, (deliveryLine) => deliveryLine.productFK)
   deliveryLines: DeliveryLine[];
 
-  @ManyToOne(() => Category, (category) => category.products)
-  @JoinColumn([{ name: "categoryFK", referencedColumnName: "id" }])
-  categoryFk: Category;
+  @ManyToOne(() => Category, (category) => category.products, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'categoryFK', referencedColumnName: 'id' }])
+  categoryFK: Category;
 
   @ManyToOne(
     () => MeasurementUnits,
-    (measurementUnits) => measurementUnits.products
+    (measurementUnits) => measurementUnits.products,
+    {
+      eager: true,
+    },
   )
-  @JoinColumn([{ name: "measurementUnitsFK", referencedColumnName: "id" }])
-  measurementUnitsFk: MeasurementUnits;
+  @JoinColumn([{ name: 'measurementUnitsFK', referencedColumnName: 'id' }])
+  measurementUnitsFK: MeasurementUnits;
 
-  @ManyToOne(() => Sale, (sale) => sale.products)
-  @JoinColumn([{ name: "saleFK", referencedColumnName: "id" }])
-  saleFk: Sale;
+  @ManyToOne(() => Sale, (sale) => sale.products, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'saleFK', referencedColumnName: 'id' }])
+  saleFK: Sale;
 
-  @ManyToOne(() => Manufacturer, (manufacturer) => manufacturer.products)
-  @JoinColumn([{ name: "manufacturerFK", referencedColumnName: "id" }])
-  manufacturerFk: Manufacturer;
+  @ManyToOne(() => Manufacturer, (manufacturer) => manufacturer.products, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'manufacturerFK', referencedColumnName: 'id' }])
+  manufacturerFK: Manufacturer;
 
-  @OneToMany(() => WriteOffAct, (writeOffAct) => writeOffAct.productFk)
+  @OneToMany(() => WriteOffAct, (writeOffAct) => writeOffAct.productFK)
   writeOffActs: WriteOffAct[];
 }

@@ -6,32 +6,34 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Product } from "./Product";
-import { SaleKinds } from "./SaleKinds";
+} from 'typeorm';
+import { Product } from './Product';
+import { SaleKinds } from './SaleKinds';
 
-@Index("PK_Sale", ["id"], { unique: true })
-@Entity("Sale", { schema: "dbo" })
+@Index('PK_Sale', ['id'], { unique: true })
+@Entity('Sale', { schema: 'dbo' })
 export class Sale {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column("date", { name: "dateStart" })
+  @Column('date', { name: 'dateStart' })
   dateStart: Date;
 
-  @Column("date", { name: "dateEnd" })
+  @Column('date', { name: 'dateEnd' })
   dateEnd: Date;
 
-  @Column("int", { name: "discountPercent", nullable: true })
+  @Column('int', { name: 'discountPercent', nullable: true })
   discountPercent: number | null;
 
-  @Column("int", { name: "productNumberOnHand", nullable: true })
+  @Column('int', { name: 'productNumberOnHand', nullable: true })
   productNumberOnHand: number | null;
 
-  @OneToMany(() => Product, (product) => product.saleFk)
+  @OneToMany(() => Product, (product) => product.saleFK)
   products: Product[];
 
-  @ManyToOne(() => SaleKinds, (saleKinds) => saleKinds.sales)
-  @JoinColumn([{ name: "saleKindsFK", referencedColumnName: "id" }])
-  saleKindsFk: SaleKinds;
+  @ManyToOne(() => SaleKinds, (saleKinds) => saleKinds.sales, {
+    eager: true,
+  })
+  @JoinColumn([{ name: 'saleKindsFK', referencedColumnName: 'id' }])
+  saleKindsFK: SaleKinds;
 }

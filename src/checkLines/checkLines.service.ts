@@ -11,14 +11,15 @@ export class CheckLineService {
     private checkLineRepository: Repository<CheckLine>,
   ) {}
 
-  async getAllByCheckId(checkFk: number): Promise<CheckLine[]> {
+  async getAllByCheckId(checkFK: number): Promise<CheckLine[]> {
     const checkLines = await this.checkLineRepository.find();
-    return checkLines.filter((line) => line.checkFk.id === checkFk);
+    return checkLines.filter((line) => line.checkFK.id === checkFK);
   }
 
   async createCheckLinesArr(checkLineArray: CheckLineCreateDto[]) {
     checkLineArray.forEach(async (line) => {
       this.checkLineRepository.create(line);
+      await this.checkLineRepository.save(line);
     });
   }
 }

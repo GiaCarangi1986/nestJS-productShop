@@ -27,8 +27,8 @@ export class BonusCard {
     },
   )
   @JoinColumn([{ name: 'bonusCardOwnerFK', referencedColumnName: 'id' }])
-  bonusCardOwnerFk: BonusCardOwner;
+  bonusCardOwnerFK: BonusCardOwner;
 
-  @OneToMany(() => Check, (check) => check.bonusCardFk)
+  @OneToMany(() => Check, (check) => check.bonusCardFK)
   checks: Check[];
 }

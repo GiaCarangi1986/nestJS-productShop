@@ -32,21 +32,27 @@ export class Check {
   @Column('bit', { name: 'changedCheck' })
   changedCheck: boolean;
 
-  @ManyToOne(() => Check, (check) => check.checks)
+  @ManyToOne(() => Check, (check) => check.checks, {
+    eager: true,
+  })
   @JoinColumn([{ name: 'parentCheckId', referencedColumnName: 'id' }])
-  parentCheck: Check;
+  parentCheckId: Check;
 
-  @OneToMany(() => Check, (check) => check.parentCheck)
+  @OneToMany(() => Check, (check) => check.parentCheckId)
   checks: Check[];
 
-  @ManyToOne(() => User, (user) => user.checks)
+  @ManyToOne(() => User, (user) => user.checks, {
+    eager: true,
+  })
   @JoinColumn([{ name: 'userFK', referencedColumnName: 'id' }])
-  userFk: User;
+  userFK: User;
 
-  @ManyToOne(() => BonusCard, (bonusCard) => bonusCard.checks)
+  @ManyToOne(() => BonusCard, (bonusCard) => bonusCard.checks, {
+    eager: true,
+  })
   @JoinColumn([{ name: 'bonusCardFK', referencedColumnName: 'id' }])
-  bonusCardFk: BonusCard;
+  bonusCardFK: BonusCard;
 
-  @OneToMany(() => CheckLine, (checkLine) => checkLine.checkFk)
+  @OneToMany(() => CheckLine, (checkLine) => checkLine.checkFK)
   checkLines: CheckLine[];
 }

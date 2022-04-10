@@ -49,20 +49,22 @@ export class CheckService {
     }
 
     let user: User;
-    this.userService.findById(checkData.userFK).then((res) => (user = res));
+    await this.userService
+      .findById(checkData.userFK)
+      .then((res) => (user = res));
 
-    const check: CreateTableCheckDto = {
-      bonusCount: checkData.bonusCount,
-      bonusCardFK: bonusCard,
-      changedCheck: checkData.changedCheck,
-      dateTime: new Date(checkData.dateTime),
-      userFK: user,
-      paid: checkData.paid,
-      parentCheckId: null,
-      totalSum: checkData.totalSum,
-    };
+    const check: CreateTableCheckDto = new Check();
+    check.bonusCount = checkData.bonusCount;
+    check.bonusCardFK = bonusCard;
+    check.changedCheck = checkData.changedCheck;
+    check.dateTime = new Date(checkData.dateTime);
+    check.userFK = user;
+    check.paid = checkData.paid;
+    check.parentCheckId = null;
+    check.totalSum = checkData.totalSum;
+
     let createdCheck = this.checkRepository.create(check);
-    createdCheck = await this.checkRepository.save(createdCheck);
+    createdCheck = await this.checkRepository.save(check);
 
     const checkLines: CheckLineCreateDto[] = [];
     checkData.checkLines.forEach((line: CheckTableLineCreateDto) => {
