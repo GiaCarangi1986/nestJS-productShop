@@ -12,13 +12,14 @@ export class CheckLineService {
   ) {}
 
   async getAllByCheckId(checkFK: number): Promise<CheckLine[]> {
-    const checkLines = await this.checkLineRepository.find();
-    return checkLines.filter((line) => line.checkFK.id === checkFK);
+    const checkLines = await this.checkLineRepository.find({
+      where: { checkFK },
+    });
+    return checkLines;
   }
 
   async createCheckLinesArr(checkLineArray: CheckLineCreateDto[]) {
     checkLineArray.forEach(async (line) => {
-      this.checkLineRepository.create(line);
       await this.checkLineRepository.save(line);
     });
   }

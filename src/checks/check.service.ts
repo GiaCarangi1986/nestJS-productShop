@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { CreateTableCheckDto } from './dto/createTable-check.dto';
-import { UpdateEditedServiceCheckDto } from './dto/updateEditedService-check.dto';
 import { UpdateEditedCheckDto } from './dto/updateEdited-check.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
@@ -33,10 +32,9 @@ export class CheckService {
   }
 
   async updateEdited(id: number, data: UpdateEditedCheckDto) {
-    let newCheck: Check;
-    await this.checkRepository
-      .findOne({ where: { id: data.parentCheckId } })
-      .then((res) => (newCheck = res));
+    const newCheck: Check = await this.checkRepository.findOne({
+      where: { id: data.parentCheckId },
+    });
 
     await this.checkRepository.update(id, {
       parentCheckId: newCheck,
@@ -59,15 +57,10 @@ export class CheckService {
         checkData.bonusCount,
       );
 
-      await this.bonusCardService
-        .findById(checkData.bonusCardFK)
-        .then((res) => (bonusCard = res));
+      bonusCard = await this.bonusCardService.findById(checkData.bonusCardFK);
     }
 
-    let user: User;
-    await this.userService
-      .findById(checkData.userFK)
-      .then((res) => (user = res));
+    const user: User = await this.userService.findById(checkData.userFK);
 
     const check: CreateTableCheckDto = new Check();
     check.bonusCount = checkData.bonusCount;
@@ -79,8 +72,7 @@ export class CheckService {
     check.parentCheckId = null;
     check.totalSum = checkData.totalSum;
 
-    let createdCheck = this.checkRepository.create(check);
-    createdCheck = await this.checkRepository.save(check);
+    const createdCheck = await this.checkRepository.save(check);
 
     const checkLines: CheckLineCreateDto[] = [];
     checkData.checkLines.forEach((line: CheckTableLineCreateDto) => {
@@ -96,13 +88,19 @@ export class CheckService {
   }
 
   async updatePaid(id: number, data: CreateCheckDto) {
-    let check: Check;
-    await this.checkRepository.findOne(id).then((res) => (check = res));
+    const check: Check = await this.checkRepository.findOne(id);
 
-    let checkLines: CheckLine[];
-    await this.checkLineService
-      .getAllByCheckId(check.id)
-      .then((res) => (checkLines = res));
+    if (!check) {
+      return `Не существует чека с id=${id}`;
+    }
+
+    const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
+      check.id,
+    );
+
+    if (checkLines.length === 0) {
+      return `В чеке с id=${id} отсутсвуют данные`;
+    }
 
     for (let i = 0; i < checkLines.length; i++) {
       let contains = false;
@@ -130,10 +128,9 @@ export class CheckService {
   }
 
   async delete(id: number) {
-    let checkLines: CheckLine[];
-    await this.checkLineService
-      .getAllByCheckId(id)
-      .then((res) => (checkLines = res));
+    const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
+      id,
+    );
 
     checkLines.forEach(async (line) => {
       await this.checkLineService.deleteOne(line.id);

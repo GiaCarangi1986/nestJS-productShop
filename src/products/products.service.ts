@@ -16,7 +16,6 @@ export class ProductService {
   }
 
   async create(product: CreateProductDto) {
-    // const newProduct = new this.products(product)
     return `${product.price}, ${product.title}`;
   }
 }

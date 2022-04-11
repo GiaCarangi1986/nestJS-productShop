@@ -7,6 +7,7 @@ import { CheckModule } from './checks/check.module';
 import { CheckLineModule } from './checkLines/checkLines.module';
 import { BonusCardModule } from './bonusCard/bonusCard.module';
 import { UserModule } from './users/users.module';
+import { DeliveryModule } from './delivery/delivery.module';
 
 import { Check } from './entities/Check';
 import { BonusCard } from './entities/BonusCard';
@@ -59,6 +60,7 @@ import { Manufacturer } from './entities/Manufacturer';
     CheckLineModule,
     BonusCardModule,
     UserModule,
+    DeliveryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
