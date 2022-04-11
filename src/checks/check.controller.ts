@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Put, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { UpdateEditedCheckDto } from './dto/updateEdited-check.dto';
 import { CheckService } from './check.service';
@@ -27,5 +36,10 @@ export class CheckController {
   @Put(':id')
   updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
     return this.checkService.updatePaid(+id, { ...data });
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: number) {
+    return this.checkService.delete(+id);
   }
 }

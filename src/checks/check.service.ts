@@ -123,8 +123,23 @@ export class CheckService {
     await this.checkRepository.update(check.id, {
       totalSum: data.totalSum,
       dateTime: data.dateTime,
+      paid: data.paid,
     });
 
     return 'success';
+  }
+
+  async delete(id: number) {
+    let checkLines: CheckLine[];
+    await this.checkLineService
+      .getAllByCheckId(id)
+      .then((res) => (checkLines = res));
+
+    checkLines.forEach(async (line) => {
+      await this.checkLineService.deleteOne(line.id);
+    });
+
+    await this.checkRepository.delete(id);
+    return id;
   }
 }
