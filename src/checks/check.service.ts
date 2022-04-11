@@ -79,7 +79,7 @@ export class CheckService {
     const checkLines: CheckLineCreateDto[] = [];
     const deliveryLines: UpdateCountDeliveryLineDto[] = [];
     let errorCount = false;
-    let index;
+    let index: number;
 
     for (index = 0; index < checkData.checkLines.length; index++) {
       const updatedLine = {
@@ -108,46 +108,6 @@ export class CheckService {
     await this.checkLineService.createCheckLinesArr(checkLines);
 
     return check;
-  }
-
-  async updatePaid(id: number, data: CreateCheckDto) {
-    const check: Check = await this.checkRepository.findOne(id);
-
-    if (!check) {
-      return `Не существует чека с id=${id}`;
-    }
-
-    const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
-      check.id,
-    );
-
-    if (checkLines.length === 0) {
-      return `В чеке с id=${id} отсутсвуют данные`;
-    }
-
-    for (let i = 0; i < checkLines.length; i++) {
-      let contains = false;
-      let j;
-      for (j = 0; j < data.checkLines.length; j++) {
-        if (checkLines[i].id === data.checkLines[j].id) {
-          contains = true;
-          break;
-        }
-      }
-      if (!contains) {
-        await this.checkLineService.deleteOne(checkLines[i].id);
-      } else {
-        await this.checkLineService.updateOne(data.checkLines[j]);
-      }
-    }
-
-    await this.checkRepository.update(check.id, {
-      totalSum: data.totalSum,
-      dateTime: data.dateTime,
-      paid: data.paid,
-    });
-
-    return 'success';
   }
 
   async delete(id: number) {

@@ -34,8 +34,12 @@ export class CheckController {
   }
 
   @Put(':id')
-  updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
-    return this.checkService.updatePaid(+id, { ...data });
+  async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
+    const error = await this.checkService.create(data);
+    if (typeof error === 'string') {
+      return error;
+    }
+    return this.checkService.delete(id);
   }
 
   @Delete(':id')
