@@ -24,8 +24,10 @@ export class CheckLineService {
     });
   }
 
-  async deleteOne(id: number) {
-    await this.checkLineRepository.delete(id);
+  async deleteArr(idArr: Array<number>) {
+    idArr.forEach(async (id) => {
+      await this.checkLineRepository.delete(id);
+    });
   }
 
   async updateOne(checkLine: CheckLine) {

@@ -110,16 +110,37 @@ export class CheckService {
     return check;
   }
 
-  async delete(id: number) {
+  async delete(id: number, needUpdateDeliveryLines: Boolean = false) {
     const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
       id,
     );
 
-    checkLines.forEach(async (line) => {
-      await this.checkLineService.deleteOne(line.id);
-    });
+    if (!checkLines.length) {
+      return `Нет чека с id = ${id}`;
+    }
+
+    const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+    const deleteLines: Array<number> = [];
+
+    for (const line of checkLines) {
+      if (needUpdateDeliveryLines) {
+        const data = await this.deliveryLineService.deltaCount(
+          +line.productFK.id,
+          -1 * line.productCount,
+        );
+        deliveryLines.push(data);
+      }
+
+      deleteLines.push(line.id);
+    }
+
+    if (needUpdateDeliveryLines) {
+      await this.deliveryLineService.updateArr(deliveryLines);
+    }
+    await this.checkLineService.deleteArr(deleteLines);
 
     await this.checkRepository.delete(id);
+
     return id;
   }
 }

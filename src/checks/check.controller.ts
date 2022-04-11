@@ -44,6 +44,6 @@ export class CheckController {
 
   @Delete(':id')
   remove(@Param('id') id: number) {
-    return this.checkService.delete(+id);
+    return this.checkService.delete(+id, true);
   }
 }
