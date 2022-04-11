@@ -6,6 +6,7 @@ import { Check } from '../entities/Check';
 import { CheckLineModule } from 'src/checkLines/checkLines.module';
 import { BonusCardModule } from 'src/bonusCard/bonusCard.module';
 import { UserModule } from 'src/users/users.module';
+import { DeliveryLineModule } from 'src/deliveryLine/deliveryLine.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserModule } from 'src/users/users.module';
     CheckLineModule,
     BonusCardModule,
     UserModule,
+    DeliveryLineModule,
   ],
   providers: [CheckService],
   controllers: [CheckController],

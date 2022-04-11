@@ -17,6 +17,8 @@ import { CheckTableLineCreateDto } from 'src/checkLines/dto/createTable-checkLin
 import { UserService } from 'src/users/users.service';
 import { CheckLine } from 'src/entities/CheckLine';
 
+import { DeliveryLineService } from 'src/deliveryLine/deliveryLine.service';
+
 @Injectable()
 export class CheckService {
   constructor(
@@ -25,6 +27,7 @@ export class CheckService {
     private readonly bonusCardService: BonusCardService,
     private readonly checkLineService: CheckLineService,
     private readonly userService: UserService,
+    private readonly deliveryLineService: DeliveryLineService,
   ) {}
 
   async getAll(): Promise<Check[]> {
@@ -45,7 +48,6 @@ export class CheckService {
   }
 
   async create(checkData: CreateCheckDto) {
-    // надо еще в поставках убирать
     let bonusCard: BonusCard = null;
 
     if (checkData.bonusCardFK) {
@@ -75,12 +77,20 @@ export class CheckService {
     const createdCheck = await this.checkRepository.save(check);
 
     const checkLines: CheckLineCreateDto[] = [];
-    checkData.checkLines.forEach((line: CheckTableLineCreateDto) => {
-      const updatedLine: CheckLineCreateDto = {
+    checkData.checkLines.forEach(async (line: CheckTableLineCreateDto) => {
+      const updatedLine = {
         ...line,
         checkFK: createdCheck,
       };
       checkLines.push(updatedLine);
+
+      const deliveryLine = await this.deliveryLineService.getAllByProductId(
+        +updatedLine.productFK,
+      );
+      await this.deliveryLineService.updateOne({
+        id: deliveryLine.id,
+        deltaCount: updatedLine.productCount,
+      });
     });
     await this.checkLineService.createCheckLinesArr(checkLines);
 
