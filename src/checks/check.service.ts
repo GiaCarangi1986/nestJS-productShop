@@ -110,7 +110,11 @@ export class CheckService {
     return check;
   }
 
-  async delete(id: number, needUpdateDeliveryLines: Boolean = false) {
+  async delete(
+    id: number,
+    needUpdateDeliveryLines: Boolean = false,
+    isCheckDelay: Boolean = false,
+  ) {
     const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
       id,
     );
@@ -123,7 +127,7 @@ export class CheckService {
     const deleteLines: Array<number> = [];
 
     for (const line of checkLines) {
-      if (needUpdateDeliveryLines) {
+      if (needUpdateDeliveryLines && !isCheckDelay) {
         const data = await this.deliveryLineService.deltaCount(
           +line.productFK.id,
           -1 * line.productCount,
@@ -134,7 +138,7 @@ export class CheckService {
       deleteLines.push(line.id);
     }
 
-    if (needUpdateDeliveryLines) {
+    if (needUpdateDeliveryLines && !isCheckDelay) {
       await this.deliveryLineService.updateArr(deliveryLines);
     }
     await this.checkLineService.deleteArr(deleteLines);

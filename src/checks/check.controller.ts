@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { UpdateEditedCheckDto } from './dto/updateEdited-check.dto';
+import { DeleteDelayCheckDto } from './dto/deleteDelay-check.dto';
 import { CheckService } from './check.service';
 
 @Controller('check')
@@ -39,11 +40,11 @@ export class CheckController {
     if (typeof error === 'string') {
       return error;
     }
-    return this.checkService.delete(id);
+    return this.checkService.delete(+id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.checkService.delete(+id, true);
+  remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
+    return this.checkService.delete(+id, true, data.isCheckDelay);
   }
 }
