@@ -11,6 +11,6 @@ export class DeliveryService {
   ) {}
 
   async getById(deliveryFK: number): Promise<Delivery> {
-    return await this.deliveryRepository.findOne({ id: deliveryFK });
+    return await this.deliveryRepository.findOne(deliveryFK);
   }
 }

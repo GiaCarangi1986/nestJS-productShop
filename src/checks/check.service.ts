@@ -35,9 +35,9 @@ export class CheckService {
   }
 
   async updateEdited(id: number, data: UpdateEditedCheckDto) {
-    const newCheck: Check = await this.checkRepository.findOne({
-      where: { id: data.parentCheckId },
-    });
+    const newCheck: Check = await this.checkRepository.findOne(
+      data.parentCheckId,
+    );
 
     await this.checkRepository.update(id, {
       parentCheckId: newCheck,
