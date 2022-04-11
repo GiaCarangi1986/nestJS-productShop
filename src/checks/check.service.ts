@@ -119,5 +119,12 @@ export class CheckService {
         await this.checkLineService.updateOne(data.checkLines[j]);
       }
     }
+
+    await this.checkRepository.update(check.id, {
+      totalSum: data.totalSum,
+      dateTime: data.dateTime,
+    });
+
+    return 'success';
   }
 }
