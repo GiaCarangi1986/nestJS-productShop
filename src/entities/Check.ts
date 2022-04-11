@@ -32,9 +32,7 @@ export class Check {
   @Column('bit', { name: 'changedCheck' })
   changedCheck: boolean;
 
-  @ManyToOne(() => Check, (check) => check.checks, {
-    eager: true,
-  })
+  @ManyToOne(() => Check, (check) => check.checks)
   @JoinColumn([{ name: 'parentCheckId', referencedColumnName: 'id' }])
   parentCheckId: Check;
 

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { CreateTableCheckDto } from './dto/createTable-check.dto';
+import { UpdateEditedServiceCheckDto } from './dto/updateEditedService-check.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
@@ -29,9 +30,20 @@ export class CheckService {
     return this.checkRepository.find();
   }
 
-  async updateEdited() {}
+  async updateEdited(data: UpdateEditedServiceCheckDto) {
+    let newCheck: Check;
+    await this.checkRepository
+      .findOne({ where: { id: data.parentCheckId } })
+      .then((res) => (newCheck = res));
+
+    await this.checkRepository.update(data.id, {
+      parentCheckId: newCheck,
+      changedCheck: true,
+    });
+  }
 
   async create(checkData: CreateCheckDto) {
+    // надо еще в поставках убирать
     let bonusCard: BonusCard = null;
 
     if (checkData.bonusCardFK) {
@@ -77,6 +89,6 @@ export class CheckService {
     });
     this.checkLineService.createCheckLinesArr(checkLines);
 
-    return checkData;
+    return check;
   }
 }

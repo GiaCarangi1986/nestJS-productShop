@@ -18,10 +18,10 @@ export class CheckController {
   }
 
   @Put(':id')
-  updateEdited(
-    @Param('id') id: number,
-    @Body() parentId: UpdateEditedCheckDto,
-  ) {
-    return `This action updates a #${id} cat, ${parentId.parentCheckId}`;
+  updateEdited(@Param('id') id: number, @Body() data: UpdateEditedCheckDto) {
+    return this.checkService.updateEdited({
+      id: +id,
+      parentCheckId: data.parentCheckId,
+    });
   }
 }
