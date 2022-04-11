@@ -11,30 +11,36 @@ export class DeliveryLineService {
     private deliveryLineRepository: Repository<DeliveryLine>,
   ) {}
 
-  async getAllByProductId(productFK: number): Promise<DeliveryLine> {
+  // async getAllByProductId(productFK: number): Promise<DeliveryLine> {
+  //   const deliveryLines = await this.deliveryLineRepository.find({
+  //     where: { productFK },
+  //   });
+  //   return deliveryLines[0];
+  // }
+
+  async deltaCount(productFK: number, deltaCount: number) {
     const deliveryLines = await this.deliveryLineRepository.find({
       where: { productFK },
     });
-    return deliveryLines[0];
+    const deliveryLineOld = await this.deliveryLineRepository.findOne(
+      deliveryLines[0].id,
+    );
+    const delta = deliveryLineOld.productCount - deltaCount;
+    return {
+      id: deliveryLines[0].id,
+      deltaCount: delta,
+      error:
+        delta < 0
+          ? `Можно купить максимум ${deliveryLineOld.productCount} шт/кг для ${deliveryLineOld.productFK.title}`
+          : '',
+    };
   }
 
-  // async createCheckLinesArr(checkLineArray: CheckLineCreateDto[]) {
-  //   checkLineArray.forEach(async (line) => {
-  //     this.checkLineRepository.create(line);
-  //     await this.checkLineRepository.save(line);
-  //   });
-  // }
-
-  // async deleteOne(id: number) {
-  //   await this.checkLineRepository.delete(id);
-  // }
-
-  async updateOne(deliveryLine: UpdateCountDeliveryLineDto) {
-    const deliveryLineOld = await this.deliveryLineRepository.findOne({
-      id: deliveryLine.id,
-    });
-    await this.deliveryLineRepository.update(deliveryLine.id, {
-      productCount: deliveryLineOld.productCount - deliveryLine.deltaCount,
+  async updateArr(deliveryLines: UpdateCountDeliveryLineDto[]) {
+    deliveryLines.forEach(async (line) => {
+      await this.deliveryLineRepository.update(line.id, {
+        productCount: line.deltaCount,
+      });
     });
   }
 }

@@ -12,12 +12,12 @@ import { BonusCardService } from 'src/bonusCard/bonusCard.service';
 
 import { CheckLineService } from 'src/checkLines/checkLines.service';
 import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
-import { CheckTableLineCreateDto } from 'src/checkLines/dto/createTable-checkLine.dto';
 
 import { UserService } from 'src/users/users.service';
 import { CheckLine } from 'src/entities/CheckLine';
 
 import { DeliveryLineService } from 'src/deliveryLine/deliveryLine.service';
+import { UpdateCountDeliveryLineDto } from 'src/deliveryLine/dto/updateCount-deliveryLine.dto';
 
 @Injectable()
 export class CheckService {
@@ -77,21 +77,34 @@ export class CheckService {
     const createdCheck = await this.checkRepository.save(check);
 
     const checkLines: CheckLineCreateDto[] = [];
-    checkData.checkLines.forEach(async (line: CheckTableLineCreateDto) => {
+    const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+    let errorCount = false;
+    let index;
+
+    for (index = 0; index < checkData.checkLines.length; index++) {
       const updatedLine = {
-        ...line,
+        ...checkData.checkLines[index],
         checkFK: createdCheck,
       };
       checkLines.push(updatedLine);
 
-      const deliveryLine = await this.deliveryLineService.getAllByProductId(
-        +updatedLine.productFK,
+      deliveryLines.push(
+        await this.deliveryLineService.deltaCount(
+          +updatedLine.productFK,
+          updatedLine.productCount,
+        ),
       );
-      await this.deliveryLineService.updateOne({
-        id: deliveryLine.id,
-        deltaCount: updatedLine.productCount,
-      });
-    });
+
+      if (deliveryLines[index].error) {
+        errorCount = true;
+        break;
+      }
+    }
+    if (errorCount) {
+      return deliveryLines[index].error;
+    } else {
+      await this.deliveryLineService.updateArr(deliveryLines);
+    }
     await this.checkLineService.createCheckLinesArr(checkLines);
 
     return check;
