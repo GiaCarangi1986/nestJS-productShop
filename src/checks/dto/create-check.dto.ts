@@ -10,4 +10,5 @@ export class CreateCheckDto {
   readonly paid: boolean;
   readonly parentCheckId: number | null;
   readonly totalSum: number;
+  readonly id?: number;
 }

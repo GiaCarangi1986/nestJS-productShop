@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { CreateTableCheckDto } from './dto/createTable-check.dto';
 import { UpdateEditedServiceCheckDto } from './dto/updateEditedService-check.dto';
+import { UpdateEditedCheckDto } from './dto/updateEdited-check.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
@@ -15,6 +16,7 @@ import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
 import { CheckTableLineCreateDto } from 'src/checkLines/dto/createTable-checkLine.dto';
 
 import { UserService } from 'src/users/users.service';
+import { CheckLine } from 'src/entities/CheckLine';
 
 @Injectable()
 export class CheckService {
@@ -30,16 +32,18 @@ export class CheckService {
     return this.checkRepository.find();
   }
 
-  async updateEdited(data: UpdateEditedServiceCheckDto) {
+  async updateEdited(id: number, data: UpdateEditedCheckDto) {
     let newCheck: Check;
     await this.checkRepository
       .findOne({ where: { id: data.parentCheckId } })
       .then((res) => (newCheck = res));
 
-    await this.checkRepository.update(data.id, {
+    await this.checkRepository.update(id, {
       parentCheckId: newCheck,
       changedCheck: true,
     });
+
+    return id;
   }
 
   async create(checkData: CreateCheckDto) {
@@ -80,15 +84,40 @@ export class CheckService {
 
     const checkLines: CheckLineCreateDto[] = [];
     checkData.checkLines.forEach((line: CheckTableLineCreateDto) => {
-      // я хз, мб надо еще Product где то доставать тащить
       const updatedLine: CheckLineCreateDto = {
         ...line,
         checkFK: createdCheck,
       };
       checkLines.push(updatedLine);
     });
-    this.checkLineService.createCheckLinesArr(checkLines);
+    await this.checkLineService.createCheckLinesArr(checkLines);
 
     return check;
+  }
+
+  async updatePaid(id: number, data: CreateCheckDto) {
+    let check: Check;
+    await this.checkRepository.findOne(id).then((res) => (check = res));
+
+    let checkLines: CheckLine[];
+    await this.checkLineService
+      .getAllByCheckId(check.id)
+      .then((res) => (checkLines = res));
+
+    for (let i = 0; i < checkLines.length; i++) {
+      let contains = false;
+      let j;
+      for (j = 0; j < data.checkLines.length; j++) {
+        if (checkLines[i].id === data.checkLines[j].id) {
+          contains = true;
+          break;
+        }
+      }
+      if (!contains) {
+        await this.checkLineService.deleteOne(checkLines[i].id);
+      } else {
+        await this.checkLineService.updateOne(data.checkLines[j]);
+      }
+    }
   }
 }

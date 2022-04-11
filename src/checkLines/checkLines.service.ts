@@ -22,4 +22,15 @@ export class CheckLineService {
       await this.checkLineRepository.save(line);
     });
   }
+
+  async deleteOne(id: number) {
+    await this.checkLineRepository.delete(id);
+  }
+
+  async updateOne(checkLine: CheckLine) {
+    await this.checkLineRepository.update(checkLine.id, {
+      productCount: checkLine.productCount,
+      oldProduct: checkLine.oldProduct,
+    });
+  }
 }
