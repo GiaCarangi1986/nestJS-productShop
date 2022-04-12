@@ -50,30 +50,43 @@ export class CheckService {
   async create(checkData: CreateCheckDto) {
     let prevCheck: Check = null;
 
-    if (checkData.changedCheck) {
-      const deliveryLines: UpdateCountDeliveryLineDto[] = [];
-      prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
-
-      let error = '';
-
-      for (const line of prevCheck.checkLines) {
-        const data = await this.deliveryLineService.deltaCount(
-          +line.productFK.id,
-          -1 * line.productCount,
-        );
-        if (data.error) {
-          error = data.error;
-          break;
-        } else {
-          deliveryLines.push(data);
+    await (async () => {
+      if (checkData.changedCheck) {
+        const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+        prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
+        /*
+          Тут надо тоже выбросить ошибку, если нет чека с таким checkData.parentCheckId
+        */
+        if (!prevCheck.changedCheck) {
+          await this.checkRepository.update(prevCheck.id, {
+            changedCheck: true,
+          });
         }
-      }
-      if (error) {
-        return error;
-      }
 
-      await this.deliveryLineService.updateArr(deliveryLines);
-    }
+        const checkLines: CheckLine[] =
+          await this.checkLineService.getAllByCheckId(prevCheck.id);
+
+        let error = '';
+
+        for (const line of checkLines) {
+          const data = await this.deliveryLineService.deltaCount(
+            +line.productFK.id,
+            -1 * line.productCount,
+          );
+          if (data.error) {
+            error = data.error;
+            break;
+          } else {
+            deliveryLines.push(data);
+          }
+        }
+        if (error) {
+          return error;
+        }
+
+        await this.deliveryLineService.updateArr(deliveryLines);
+      }
+    })();
 
     let bonusCard: BonusCard = null;
     if (checkData.bonusCardFK) {
