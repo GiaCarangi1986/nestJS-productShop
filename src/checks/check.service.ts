@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { CreateTableCheckDto } from './dto/createTable-check.dto';
-import { UpdateEditedCheckDto } from './dto/updateEdited-check.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
@@ -34,29 +33,22 @@ export class CheckService {
     return this.checkRepository.find();
   }
 
-  async updateEdited(id: number, data: UpdateEditedCheckDto) {
-    const newCheck: Check = await this.checkRepository.findOne(
-      data.parentCheckId,
-    );
-
-    await this.checkRepository.update(id, {
-      parentCheckId: newCheck,
-      changedCheck: true,
-    });
-
-    return id;
-  }
-
   async create(checkData: CreateCheckDto) {
     let prevCheck: Check = null;
 
     await (async () => {
       if (checkData.changedCheck) {
         const deliveryLines: UpdateCountDeliveryLineDto[] = [];
-        prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
         /*
           Тут надо тоже выбросить ошибку, если нет чека с таким checkData.parentCheckId
         */
+        prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
+        if (!prevCheck) {
+          throw {
+            message: `Чека с id = ${checkData.parentCheckId} не существует`,
+          };
+        }
+
         if (!prevCheck.changedCheck) {
           await this.checkRepository.update(prevCheck.id, {
             changedCheck: true,

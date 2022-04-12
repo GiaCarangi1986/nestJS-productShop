@@ -5,11 +5,11 @@ import {
   Body,
   Put,
   Param,
-  Patch,
   Delete,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreateCheckDto } from './dto/create-check.dto';
-import { UpdateEditedCheckDto } from './dto/updateEdited-check.dto';
 import { DeleteDelayCheckDto } from './dto/deleteDelay-check.dto';
 import { CheckService } from './check.service';
 
@@ -23,16 +23,11 @@ export class CheckController {
   }
 
   @Post()
-  create(@Body() checkData: CreateCheckDto) {
-    return this.checkService.create(checkData);
+  async create(@Body() checkData: CreateCheckDto) {
+    return this.checkService.create(checkData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
   }
-
-  // @Patch(':id')
-  // updateEdited(@Param('id') id: number, @Body() data: UpdateEditedCheckDto) {
-  //   return this.checkService.updateEdited(+id, {
-  //     parentCheckId: data.parentCheckId,
-  //   });
-  // }
 
   @Put(':id')
   async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
