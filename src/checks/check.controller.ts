@@ -19,7 +19,9 @@ export class CheckController {
 
   @Get()
   getAll() {
-    return this.checkService.getAll();
+    return this.checkService.getAll().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
   }
 
   @Post()
@@ -31,15 +33,20 @@ export class CheckController {
 
   @Put(':id')
   async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
-    const error = await this.checkService.create(data);
-    if (typeof error === 'string') {
-      return error;
-    }
-    return this.checkService.delete(+id);
+    await this.checkService.create(data).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+    return this.checkService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
   }
 
   @Delete(':id')
   remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
-    return this.checkService.delete(+id, true, data.isCheckDelay);
+    return this.checkService
+      .delete(+id, true, data.isCheckDelay)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      });
   }
 }

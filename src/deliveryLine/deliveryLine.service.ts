@@ -11,35 +11,31 @@ export class DeliveryLineService {
     private deliveryLineRepository: Repository<DeliveryLine>,
   ) {}
 
-  // async getAllByProductId(productFK: number): Promise<DeliveryLine> {
-  //   const deliveryLines = await this.deliveryLineRepository.find({
-  //     where: { productFK },
-  //   });
-  //   return deliveryLines[0];
-  // }
-
   async deltaCount(productFK: number, deltaCount: number) {
     const deliveryLines = await this.deliveryLineRepository.find({
       where: { productFK },
     });
 
     if (!deliveryLines.length) {
-      return {
-        error: `Не существует продукта с id = ${productFK}`,
+      throw {
+        message: `Не существует продукта с id = ${productFK}`,
       };
     }
 
     const deliveryLineOld = await this.deliveryLineRepository.findOne(
       deliveryLines[0].id,
     );
+
     const delta = deliveryLineOld.productCount - deltaCount;
+    if (delta < 0) {
+      throw {
+        message: `Можно купить максимум ${deliveryLineOld.productCount} шт/кг для '${deliveryLineOld.productFK.title}'`,
+      };
+    }
+
     return {
       id: deliveryLines[0].id,
       deltaCount: delta,
-      error:
-        delta < 0
-          ? `Можно купить максимум ${deliveryLineOld.productCount} шт/кг для ${deliveryLineOld.productFK.title}`
-          : '',
     };
   }
 

@@ -39,9 +39,6 @@ export class CheckService {
     await (async () => {
       if (checkData.changedCheck) {
         const deliveryLines: UpdateCountDeliveryLineDto[] = [];
-        /*
-          Тут надо тоже выбросить ошибку, если нет чека с таким checkData.parentCheckId
-        */
         prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
         if (!prevCheck) {
           throw {
@@ -58,22 +55,12 @@ export class CheckService {
         const checkLines: CheckLine[] =
           await this.checkLineService.getAllByCheckId(prevCheck.id);
 
-        let error = '';
-
         for (const line of checkLines) {
           const data = await this.deliveryLineService.deltaCount(
             +line.productFK.id,
             -1 * line.productCount,
           );
-          if (data.error) {
-            error = data.error;
-            break;
-          } else {
-            deliveryLines.push(data);
-          }
-        }
-        if (error) {
-          return error;
+          deliveryLines.push(data);
         }
 
         await this.deliveryLineService.updateArr(deliveryLines);
@@ -109,7 +96,6 @@ export class CheckService {
 
     const checkLines: CheckLineCreateDto[] = [];
     const deliveryLines: UpdateCountDeliveryLineDto[] = [];
-    let errorCount = false;
     let index: number;
 
     for (index = 0; index < checkData.checkLines.length; index++) {
@@ -125,17 +111,9 @@ export class CheckService {
           updatedLine.productCount,
         ),
       );
+    }
 
-      if (deliveryLines[index].error) {
-        errorCount = true;
-        break;
-      }
-    }
-    if (errorCount) {
-      return deliveryLines[index].error;
-    } else {
-      await this.deliveryLineService.updateArr(deliveryLines);
-    }
+    await this.deliveryLineService.updateArr(deliveryLines);
     await this.checkLineService.createCheckLinesArr(checkLines);
 
     return check;
@@ -151,7 +129,9 @@ export class CheckService {
     );
 
     if (!checkLines.length) {
-      return `Нет чека с id = ${id}`;
+      throw {
+        message: `Нет чека с id = ${id}`,
+      };
     }
 
     const deliveryLines: UpdateCountDeliveryLineDto[] = [];
@@ -165,7 +145,6 @@ export class CheckService {
         );
         deliveryLines.push(data);
       }
-
       deleteLines.push(line.id);
     }
 
@@ -173,7 +152,6 @@ export class CheckService {
       await this.deliveryLineService.updateArr(deliveryLines);
     }
     await this.checkLineService.deleteArr(deleteLines);
-
     await this.checkRepository.delete(id);
 
     return id;
