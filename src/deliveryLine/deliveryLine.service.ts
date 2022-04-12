@@ -22,6 +22,13 @@ export class DeliveryLineService {
     const deliveryLines = await this.deliveryLineRepository.find({
       where: { productFK },
     });
+
+    if (!deliveryLines.length) {
+      return {
+        error: `Не существует продукта с id = ${productFK}`,
+      };
+    }
+
     const deliveryLineOld = await this.deliveryLineRepository.findOne(
       deliveryLines[0].id,
     );

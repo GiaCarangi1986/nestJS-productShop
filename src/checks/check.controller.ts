@@ -27,12 +27,12 @@ export class CheckController {
     return this.checkService.create(checkData);
   }
 
-  @Patch(':id')
-  updateEdited(@Param('id') id: number, @Body() data: UpdateEditedCheckDto) {
-    return this.checkService.updateEdited(+id, {
-      parentCheckId: data.parentCheckId,
-    });
-  }
+  // @Patch(':id')
+  // updateEdited(@Param('id') id: number, @Body() data: UpdateEditedCheckDto) {
+  //   return this.checkService.updateEdited(+id, {
+  //     parentCheckId: data.parentCheckId,
+  //   });
+  // }
 
   @Put(':id')
   async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {

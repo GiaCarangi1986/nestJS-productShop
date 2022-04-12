@@ -48,8 +48,34 @@ export class CheckService {
   }
 
   async create(checkData: CreateCheckDto) {
-    let bonusCard: BonusCard = null;
+    let prevCheck: Check = null;
 
+    if (checkData.changedCheck) {
+      const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+      prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
+
+      let error = '';
+
+      for (const line of prevCheck.checkLines) {
+        const data = await this.deliveryLineService.deltaCount(
+          +line.productFK.id,
+          -1 * line.productCount,
+        );
+        if (data.error) {
+          error = data.error;
+          break;
+        } else {
+          deliveryLines.push(data);
+        }
+      }
+      if (error) {
+        return error;
+      }
+
+      await this.deliveryLineService.updateArr(deliveryLines);
+    }
+
+    let bonusCard: BonusCard = null;
     if (checkData.bonusCardFK) {
       await this.bonusCardService.update(
         checkData.bonusCardFK,
@@ -71,7 +97,7 @@ export class CheckService {
     check.dateTime = new Date(checkData.dateTime);
     check.userFK = user;
     check.paid = checkData.paid;
-    check.parentCheckId = null;
+    check.parentCheckId = prevCheck;
     check.totalSum = checkData.totalSum;
 
     const createdCheck = await this.checkRepository.save(check);
