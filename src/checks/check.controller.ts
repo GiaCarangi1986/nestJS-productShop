@@ -19,26 +19,26 @@ export class CheckController {
   constructor(private readonly checkService: CheckService) {}
 
   @Get()
-  getAll(@Body() params: GetAllChecksDto) {
+  async getAll(@Body() params: GetAllChecksDto) {
     return this.checkService.getAll(params).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
     });
   }
 
   @Post()
   async create(@Body() checkData: CreateCheckDto) {
     return this.checkService.create(checkData).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
     });
   }
 
   @Put(':id')
   async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
     await this.checkService.create(data).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
     });
     return this.checkService.delete(+id).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
     });
   }
 
@@ -47,7 +47,7 @@ export class CheckController {
     return this.checkService
       .delete(+id, true, data.isCheckDelay)
       .catch((err) => {
-        throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
       });
   }
 }
