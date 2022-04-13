@@ -119,40 +119,66 @@ export class CheckService {
     return check;
   }
 
+  async treeDeleteCheck(id: number) {
+    const check = await this.checkRepository.findOne(id, {
+      relations: ['parentCheckId'],
+    });
+    if (check.changedCheck) {
+      const prevCheck = await this.checkRepository.findOne({
+        where: { id: check.parentCheckId?.id },
+      });
+      return prevCheck?.id;
+    }
+    return undefined;
+  }
+
   async delete(
     id: number,
     needUpdateDeliveryLines: Boolean = false,
     isCheckDelay: Boolean = false,
   ) {
-    const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
-      id,
-    );
-
-    if (!checkLines.length) {
-      throw {
-        message: `Нет чека с id = ${id}`,
-      };
-    }
-
-    const deliveryLines: UpdateCountDeliveryLineDto[] = [];
-    const deleteLines: Array<number> = [];
-
-    for (const line of checkLines) {
-      if (needUpdateDeliveryLines && !isCheckDelay) {
-        const data = await this.deliveryLineService.deltaCount(
-          +line.productFK.id,
-          -1 * line.productCount,
-        );
-        deliveryLines.push(data);
+    let checksForDelete: number[] = [];
+    let idParam = id;
+    do {
+      if (idParam) {
+        checksForDelete.push(idParam);
       }
-      deleteLines.push(line.id);
-    }
+      idParam = await this.treeDeleteCheck(idParam);
+    } while (idParam);
 
-    if (needUpdateDeliveryLines && !isCheckDelay) {
-      await this.deliveryLineService.updateArr(deliveryLines);
-    }
-    await this.checkLineService.deleteArr(deleteLines);
-    await this.checkRepository.delete(id);
+    checksForDelete.forEach(async (idDel) => {
+      const checkLines: CheckLine[] =
+        await this.checkLineService.getAllByCheckId(idDel);
+
+      if (!checkLines.length) {
+        throw {
+          message: `Нет данных о строках чека с id = ${idDel}`,
+        };
+      }
+
+      if (checksForDelete.length > 0) {
+        const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+        const deleteLines: Array<number> = [];
+
+        for (const line of checkLines) {
+          if (needUpdateDeliveryLines && !isCheckDelay) {
+            const data = await this.deliveryLineService.deltaCount(
+              +line.productFK.id,
+              -1 * line.productCount,
+            );
+            deliveryLines.push(data);
+          }
+          deleteLines.push(line.id);
+        }
+
+        if (needUpdateDeliveryLines && !isCheckDelay) {
+          await this.deliveryLineService.updateArr(deliveryLines);
+        }
+        await this.checkLineService.deleteArr(deleteLines);
+
+        await this.checkRepository.delete(idDel);
+      }
+    });
 
     return id;
   }

@@ -42,7 +42,7 @@ export class CheckController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
+  async remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
     return this.checkService
       .delete(+id, true, data.isCheckDelay)
       .catch((err) => {
