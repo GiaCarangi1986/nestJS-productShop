@@ -46,12 +46,6 @@ export class CheckService {
           };
         }
 
-        if (!prevCheck.changedCheck) {
-          await this.checkRepository.update(prevCheck.id, {
-            changedCheck: true,
-          });
-        }
-
         const checkLines: CheckLine[] =
           await this.checkLineService.getAllByCheckId(prevCheck.id);
 
@@ -89,10 +83,17 @@ export class CheckService {
     check.dateTime = new Date(checkData.dateTime);
     check.userFK = user;
     check.paid = checkData.paid;
-    check.parentCheckId = prevCheck;
+    check.parentCheckId = null;
     check.totalSum = checkData.totalSum;
 
     const createdCheck = await this.checkRepository.save(check);
+
+    if (checkData.changedCheck) {
+      await this.checkRepository.update(prevCheck.id, {
+        changedCheck: true,
+        parentCheckId: createdCheck,
+      });
+    }
 
     const checkLines: CheckLineCreateDto[] = [];
     const deliveryLines: UpdateCountDeliveryLineDto[] = [];
