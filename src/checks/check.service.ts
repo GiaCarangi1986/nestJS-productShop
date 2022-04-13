@@ -67,6 +67,9 @@ export class CheckService {
 
     const [results, count] = await this.checkRepository.findAndCount({
       where,
+      order: {
+        dateTime: 'DESC',
+      },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });

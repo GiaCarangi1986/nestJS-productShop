@@ -25,4 +25,17 @@ export class BonusCardService {
       bonusCount: newSum,
     });
   }
+
+  async findAll() {
+    const data = await this.bonusCardRepository.find();
+    const serBonusCards = [];
+    for (const bonusCard of data) {
+      serBonusCards.push({
+        id: bonusCard.id,
+        FIO: bonusCard.bonusCardOwnerFK.fio,
+        bonus: bonusCard.bonusCount,
+      });
+    }
+    return serBonusCards;
+  }
 }
