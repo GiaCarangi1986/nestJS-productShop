@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { CreateTableCheckDto } from './dto/createTable-check.dto';
+import { GetAllChecksDto } from './dto/getAll-check.dto';
+import { WhereCheckDto } from './dto/where.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
@@ -29,8 +31,57 @@ export class CheckService {
     private readonly deliveryLineService: DeliveryLineService,
   ) {}
 
-  async getAll(): Promise<Check[]> {
-    return this.checkRepository.find();
+  serializerCheck = async (check: Check) => ({
+    id: check.id,
+    dateTime: check.dateTime,
+    kassir: check.userFK.fio,
+    totalSum: check.totalSum,
+    bonusPop: check.bonusCount,
+    paidedCheck: check.paid,
+    changedCheck: check.changedCheck,
+  });
+
+  smallDate = new Date(-8640000000000000);
+  bigDate = new Date();
+
+  async getAll({
+    page,
+    pageSize,
+    delayedShow = false,
+    changedShow = false,
+    dateStart = this.smallDate,
+    dateEnd = this.bigDate,
+  }: GetAllChecksDto) {
+    const where: WhereCheckDto = {
+      parentCheckId: null,
+      dateTime:
+        MoreThanOrEqual(dateStart || this.smallDate) &&
+        LessThanOrEqual(dateEnd || this.bigDate),
+    };
+    if (changedShow) {
+      where.changedShow = changedShow;
+    }
+    if (delayedShow) {
+      where.paid = !delayedShow;
+    }
+
+    const [results, count] = await this.checkRepository.findAndCount({
+      where,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    let serResult = [];
+    for (const check of results) {
+      const serCheck = await this.serializerCheck(check);
+      serResult.push(serCheck);
+    }
+
+    return {
+      results: serResult,
+      count,
+      next: count > results.length,
+    };
   }
 
   async create(checkData: CreateCheckDto) {

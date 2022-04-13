@@ -9,8 +9,6 @@ export class CreateTableCheckDto {
   dateTime: Date | null;
   userFK: User;
   paid: boolean;
-  parentCheckId: Check | null; // сначала создадим обычный чек, а потом если у него стоит changedCheck=true, то обновим предыдущий
+  parentCheckId: Check | null;
   totalSum: number;
 }
-
-// на фронте передать в таком случае id старого чека, иначе тупо не найду

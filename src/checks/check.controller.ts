@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { DeleteDelayCheckDto } from './dto/deleteDelay-check.dto';
+import { GetAllChecksDto } from './dto/getAll-check.dto';
 import { CheckService } from './check.service';
 
 @Controller('check')
@@ -18,8 +19,8 @@ export class CheckController {
   constructor(private readonly checkService: CheckService) {}
 
   @Get()
-  getAll() {
-    return this.checkService.getAll().catch((err) => {
+  getAll(@Body() params: GetAllChecksDto) {
+    return this.checkService.getAll(params).catch((err) => {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     });
   }
