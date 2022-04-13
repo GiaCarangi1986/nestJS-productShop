@@ -121,12 +121,10 @@ export class CheckService {
   }
 
   async treeDeleteCheck(id: number) {
-    const check = await this.checkRepository.findOne(id, {
-      relations: ['parentCheckId'],
-    });
+    const check = await this.checkRepository.findOne(id);
     if (check.changedCheck) {
       const prevCheck = await this.checkRepository.findOne({
-        where: { id: check.parentCheckId?.id },
+        where: { parentCheckId: check.id },
       });
       return prevCheck?.id;
     }
@@ -147,7 +145,7 @@ export class CheckService {
       idParam = await this.treeDeleteCheck(idParam);
     } while (idParam);
 
-    checksForDelete.forEach(async (idDel) => {
+    checksForDelete.reverse().forEach(async (idDel) => {
       const checkLines: CheckLine[] =
         await this.checkLineService.getAllByCheckId(idDel);
 
