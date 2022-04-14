@@ -8,6 +8,7 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { DeleteDelayCheckDto } from './dto/deleteDelay-check.dto';
@@ -49,5 +50,12 @@ export class CheckController {
       .catch((err) => {
         throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
       });
+  }
+
+  @Patch(':id')
+  async getHistory(@Param('id') id: number) {
+    return await this.checkService.getHistory(id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
+    });
   }
 }

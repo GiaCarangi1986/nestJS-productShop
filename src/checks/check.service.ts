@@ -235,4 +235,23 @@ export class CheckService {
 
     return id;
   }
+
+  async getHistory(id: number) {
+    let checksForHistory: Check[] = [];
+    let idParam = id;
+    do {
+      if (idParam) {
+        const check = await this.checkRepository.findOne(idParam);
+        checksForHistory.push(check);
+      }
+      idParam = await this.treeDeleteCheck(idParam);
+    } while (idParam);
+
+    const serCheckForHistory = [];
+    for (const check of checksForHistory.reverse()) {
+      const serCheck = await this.serializerCheck(check);
+      serCheckForHistory.push(serCheck);
+    }
+    return serCheckForHistory;
+  }
 }
