@@ -46,4 +46,8 @@ export class DeliveryLineService {
       });
     });
   }
+
+  async findByProductFK(id: number) {
+    return this.deliveryLineRepository.findOne({ where: { productFK: id } });
+  }
 }
