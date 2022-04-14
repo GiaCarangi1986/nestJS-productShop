@@ -15,7 +15,7 @@ export class UserController {
   @Post()
   async login(@Body() params: LoginUserDto) {
     return this.userService.login(params).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 }

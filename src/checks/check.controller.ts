@@ -22,24 +22,24 @@ export class CheckController {
   @Get()
   async getAll(@Body() params: GetAllChecksDto) {
     return this.checkService.getAll(params).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 
   @Post()
   async create(@Body() checkData: CreateCheckDto) {
     return this.checkService.create(checkData).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 
   @Put(':id')
   async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
     await this.checkService.create(data).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
     return this.checkService.delete(+id).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 
@@ -48,14 +48,14 @@ export class CheckController {
     return this.checkService
       .delete(+id, true, data.isCheckDelay)
       .catch((err) => {
-        throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
       });
   }
 
   @Patch(':id')
   async getHistory(@Param('id') id: number) {
     return await this.checkService.getHistory(id).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.NOT_IMPLEMENTED);
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 }
