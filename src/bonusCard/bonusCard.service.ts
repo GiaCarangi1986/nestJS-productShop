@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
 
 @Injectable()
@@ -37,5 +37,26 @@ export class BonusCardService {
       });
     }
     return serBonusCards;
+  }
+
+  async findAllSearch(value: string) {
+    if (!value) {
+      return [];
+    } else {
+      // если надо fio, то еще по той фигня отдельно делать надо
+      const data = await this.bonusCardRepository.find({
+        where: { id: Like(value) },
+      });
+
+      const serBonusCards = [];
+      for (const bonusCard of data) {
+        serBonusCards.push({
+          id: bonusCard.id,
+          FIO: bonusCard.bonusCardOwnerFK.fio,
+          bonus: bonusCard.bonusCount,
+        });
+      }
+      return serBonusCards;
+    }
   }
 }

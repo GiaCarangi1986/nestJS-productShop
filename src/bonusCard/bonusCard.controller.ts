@@ -1,5 +1,13 @@
-import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { BonusCardService } from './bonusCard.service';
+import { GetSearchListBonusCardDto } from './dto/searchList-bonusCard';
 
 @Controller('bonus_card')
 export class BonusCardController {
@@ -8,6 +16,13 @@ export class BonusCardController {
   @Get()
   async getAll() {
     return this.bonusCardService.findAll().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+  }
+
+  @Post()
+  async getAllSearch(@Body() params: GetSearchListBonusCardDto) {
+    return this.bonusCardService.findAllSearch(params.search).catch((err) => {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     });
   }
