@@ -22,7 +22,7 @@ export class UserService {
     });
     if (!data) {
       throw {
-        message: 'Логин и/или пароль не верны',
+        message: 'Логин и/или пароль неверны',
       };
     }
     const fio = data.fio.split(' ');

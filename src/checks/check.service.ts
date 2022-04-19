@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { Repository, Raw } from 'typeorm';
 import { CreateCheckDto } from './dto/create-check.dto';
 import { CreateTableCheckDto } from './dto/createTable-check.dto';
 import { GetAllChecksDto } from './dto/getAll-check.dto';
@@ -8,6 +8,7 @@ import { WhereCheckDto } from './dto/where.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
+import { serializerCheckForDB } from './check.serializer';
 
 import { BonusCardService } from 'src/bonusCard/bonusCard.service';
 
@@ -31,35 +32,24 @@ export class CheckService {
     private readonly deliveryLineService: DeliveryLineService,
   ) {}
 
-  serializerCheck = async (check: Check) => ({
-    id: check.id,
-    dateTime: check.dateTime,
-    kassir: check.userFK.fio,
-    totalSum: check.totalSum,
-    bonusPop: check.bonusCount,
-    paidedCheck: check.paid,
-    changedCheck: check.changedCheck,
-  });
-
-  smallDate = new Date(-8640000000000000);
-  bigDate = new Date();
-
   async getAll({
     page,
     pageSize,
     delayedShow = false,
     changedShow = false,
-    dateStart = this.smallDate,
-    dateEnd = this.bigDate,
+    dateStart,
+    dateEnd,
   }: GetAllChecksDto) {
     const where: WhereCheckDto = {
+      dateTime: Raw((date) => `${date} >= :dateStart AND ${date} <= :dateEnd`, {
+        dateStart,
+        dateEnd,
+      }),
       parentCheckId: null,
-      dateTime:
-        MoreThanOrEqual(dateStart || this.smallDate) &&
-        LessThanOrEqual(dateEnd || this.bigDate),
+      // dateTime: MoreThanOrEqual(dateStart) && LessThanOrEqual(dateEnd),
     };
     if (changedShow) {
-      where.changedShow = changedShow;
+      where.changedCheck = changedShow;
     }
     if (delayedShow) {
       where.paid = !delayedShow;
@@ -68,7 +58,7 @@ export class CheckService {
     const [results, count] = await this.checkRepository.findAndCount({
       where,
       order: {
-        dateTime: 'DESC',
+        id: 'DESC',
       },
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -76,7 +66,7 @@ export class CheckService {
 
     let serResult = [];
     for (const check of results) {
-      const serCheck = await this.serializerCheck(check);
+      const serCheck = await serializerCheckForDB(check);
       serResult.push(serCheck);
     }
 
@@ -249,7 +239,7 @@ export class CheckService {
 
     const serCheckForHistory = [];
     for (const check of checksForHistory.reverse()) {
-      const serCheck = await this.serializerCheck(check);
+      const serCheck = await serializerCheckForDB(check);
       serCheckForHistory.push(serCheck);
     }
     return serCheckForHistory;
