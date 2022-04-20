@@ -8,7 +8,10 @@ import { WhereCheckDto } from './dto/where.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
-import { serializerCheckForDB } from './check.serializer';
+import {
+  serializerCheckForDB,
+  serializerCheckWithLineForDB,
+} from './check.serializer';
 
 import { BonusCardService } from 'src/bonusCard/bonusCard.service';
 
@@ -46,7 +49,6 @@ export class CheckService {
         dateEnd,
       }),
       parentCheckId: null,
-      // dateTime: MoreThanOrEqual(dateStart) && LessThanOrEqual(dateEnd),
     };
     if (changedShow) {
       where.changedCheck = changedShow;
@@ -236,7 +238,10 @@ export class CheckService {
     let idParam = id;
     do {
       if (idParam) {
-        const check = await this.checkRepository.findOne(idParam);
+        const check = await this.checkRepository.findOne({
+          where: { id: idParam },
+          relations: ['checkLines'],
+        });
         checksForHistory.push(check);
       }
       idParam = await this.treeDeleteCheck(idParam);
@@ -244,7 +249,7 @@ export class CheckService {
 
     const serCheckForHistory = [];
     for (const check of checksForHistory.reverse()) {
-      const serCheck = await serializerCheckForDB(check);
+      const serCheck = await serializerCheckWithLineForDB(check);
       serCheckForHistory.push(serCheck);
     }
     return serCheckForHistory;

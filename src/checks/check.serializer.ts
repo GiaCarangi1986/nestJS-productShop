@@ -1,4 +1,5 @@
 import { Check } from 'src/entities/Check';
+import { CheckLine } from 'src/entities/CheckLine';
 import { GetAllChecksDtoQS } from './dto/getAll-check.dto';
 
 const serializerCheckForDB = async (check: Check) => ({
@@ -20,4 +21,36 @@ const serializerCheckFromQS = (check: GetAllChecksDtoQS) => ({
   dateEnd: check?.dateEnd,
 });
 
-export { serializerCheckForDB, serializerCheckFromQS };
+const serializerCheckWithLineForDB = async (check: Check) => {
+  const checkSer = {
+    id: check.id,
+    dateTime: check.dateTime,
+    bonusCount: check.bonusCount,
+    cardFK: check.bonusCardFK?.id || null,
+    kassir: check.userFK.fio,
+    paid: check.paid,
+    totalSum: check.totalSum,
+    parentCheckId: check?.parentCheckId || null,
+  };
+  const lineSer = [];
+  for (const line of check.checkLines) {
+    lineSer.push({
+      id: line.id,
+      productCount: line.productCount,
+      price: line.price,
+      oldProduct: line.oldProduct,
+      productName: line.productFK?.manufacturerFK
+        ? `${line.productFK.title}, ${line.productFK?.manufacturerFK?.title}`
+        : line.productFK.title,
+      mayBeOld: line.productFK.maybeOld,
+      sale: line.productFK.saleFK,
+    });
+  }
+  return { ...checkSer, checkLines: lineSer };
+};
+
+export {
+  serializerCheckForDB,
+  serializerCheckFromQS,
+  serializerCheckWithLineForDB,
+};

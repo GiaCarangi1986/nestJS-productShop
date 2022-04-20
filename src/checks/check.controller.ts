@@ -38,7 +38,7 @@ export class CheckController {
     });
   }
 
-  @Put(':id')
+  @Put(':id') // запрос на оплату отложенного чека
   async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
     await this.checkService.create(data).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
@@ -57,7 +57,7 @@ export class CheckController {
       });
   }
 
-  @Patch(':id')
+  @Patch(':id') // запрос на историю изменений
   async getHistory(@Param('id') id: number) {
     return await this.checkService.getHistory(id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
