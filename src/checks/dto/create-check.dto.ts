@@ -1,4 +1,4 @@
-import { CheckTableLineCreateDto } from 'src/checkLines/dto/createTable-checkLine.dto';
+import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
 
 export class CreateCheckDto {
   readonly bonusCount: number;
@@ -6,7 +6,7 @@ export class CreateCheckDto {
   readonly changedCheck: boolean;
   readonly dateTime: Date | null;
   readonly userFK: number;
-  readonly checkLines: Array<CheckTableLineCreateDto>;
+  readonly checkLines: Array<CheckLineCreateDto>;
   readonly paid: boolean;
   readonly parentCheckId: number | null;
   readonly totalSum: number;

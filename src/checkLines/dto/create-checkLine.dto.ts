@@ -6,5 +6,5 @@ export class CheckLineCreateDto {
   readonly productFK: Product;
   readonly oldProduct: boolean;
   readonly price: number;
-  checkFK: Check; // id, который вернется после создания чека
+  checkFK?: Check; // id, который вернется после создания чека
 }

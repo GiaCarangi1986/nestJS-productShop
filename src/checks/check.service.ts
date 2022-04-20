@@ -105,18 +105,9 @@ export class CheckService {
       }
     })();
 
-    let bonusCard: BonusCard = null;
-    if (checkData.bonusCardFK) {
-      await this.bonusCardService.update(
-        checkData.bonusCardFK,
-        checkData.totalSum
-          ? Math.round((checkData.totalSum / 100) * 100) / 100
-          : 0,
-        checkData.bonusCount,
-      );
-
-      bonusCard = await this.bonusCardService.findById(checkData.bonusCardFK);
-    }
+    let bonusCard: BonusCard = checkData.bonusCardFK
+      ? await this.bonusCardService.findById(checkData.bonusCardFK)
+      : null;
 
     const user: User = await this.userService.findById(checkData.userFK);
 
@@ -130,14 +121,7 @@ export class CheckService {
     check.parentCheckId = null;
     check.totalSum = checkData.totalSum;
 
-    const createdCheck = await this.checkRepository.save(check);
-
-    if (checkData.changedCheck) {
-      await this.checkRepository.update(prevCheck.id, {
-        changedCheck: true,
-        parentCheckId: createdCheck,
-      });
-    }
+    let createdCheck = await this.checkRepository.save(check);
 
     const checkLines: CheckLineCreateDto[] = [];
     const deliveryLines: UpdateCountDeliveryLineDto[] = [];
@@ -150,16 +134,35 @@ export class CheckService {
       };
       checkLines.push(updatedLine);
 
-      deliveryLines.push(
-        await this.deliveryLineService.deltaCount(
-          +updatedLine.productFK,
-          updatedLine.productCount,
-        ),
-      );
+      await this.deliveryLineService
+        .deltaCount(+updatedLine.productFK, updatedLine.productCount)
+        .then((res) => deliveryLines.push(res))
+        .catch(async (err) => {
+          await this.checkRepository.delete(createdCheck.id);
+          throw { message: err.message };
+        });
     }
 
     await this.deliveryLineService.updateArr(deliveryLines);
     await this.checkLineService.createCheckLinesArr(checkLines);
+
+    if (checkData.changedCheck) {
+      await this.checkRepository.update(prevCheck.id, {
+        changedCheck: true,
+        parentCheckId: createdCheck,
+      });
+    }
+
+    if (checkData.bonusCardFK) {
+      await this.bonusCardService.update(
+        checkData.bonusCardFK,
+        checkData.totalSum
+          ? Math.round((checkData.totalSum / 100) * 100) / 100
+          : 0,
+        checkData.bonusCount,
+      );
+      bonusCard = await this.bonusCardService.findById(checkData.bonusCardFK);
+    }
 
     return check;
   }
