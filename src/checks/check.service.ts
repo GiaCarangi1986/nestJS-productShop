@@ -182,6 +182,7 @@ export class CheckService {
     id: number,
     needUpdateDeliveryLines: Boolean = false,
     isCheckDelay: Boolean = false,
+    dirty?: Boolean,
   ) {
     let checksForDelete: number[] = [];
     let idParam = id;
@@ -192,39 +193,40 @@ export class CheckService {
       idParam = await this.treeDeleteCheck(idParam);
     } while (idParam);
 
-    checksForDelete.reverse().forEach(async (idDel) => {
+    for (const idDel of checksForDelete.reverse()) {
       const checkLines: CheckLine[] =
         await this.checkLineService.getAllByCheckId(idDel);
 
-      if (!checkLines.length) {
-        throw {
-          message: `Нет данных о строках чека с id = ${idDel}`,
-        };
-      }
+      if (!dirty) {
+        if (!checkLines.length) {
+          throw {
+            message: `Нет данных о строках чека с id = ${idDel}`,
+          };
+        }
 
-      if (checksForDelete.length > 0) {
-        const deliveryLines: UpdateCountDeliveryLineDto[] = [];
-        const deleteLines: Array<number> = [];
+        if (checksForDelete.length > 0) {
+          const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+          const deleteLines: Array<number> = [];
 
-        for (const line of checkLines) {
-          if (needUpdateDeliveryLines && !isCheckDelay) {
-            const data = await this.deliveryLineService.deltaCount(
-              +line.productFK.id,
-              -1 * line.productCount,
-            );
-            deliveryLines.push(data);
+          for (const line of checkLines) {
+            if (needUpdateDeliveryLines && !isCheckDelay) {
+              const data = await this.deliveryLineService.deltaCount(
+                +line.productFK.id,
+                -1 * line.productCount,
+              );
+              deliveryLines.push(data);
+            }
+            deleteLines.push(line.id);
           }
-          deleteLines.push(line.id);
-        }
 
-        if (needUpdateDeliveryLines && !isCheckDelay) {
-          await this.deliveryLineService.updateArr(deliveryLines);
+          if (needUpdateDeliveryLines && !isCheckDelay) {
+            await this.deliveryLineService.updateArr(deliveryLines);
+          }
+          await this.checkLineService.deleteArr(deleteLines);
         }
-        await this.checkLineService.deleteArr(deleteLines);
-
-        await this.checkRepository.delete(idDel);
       }
-    });
+      await this.checkRepository.delete(idDel);
+    }
 
     return id;
   }

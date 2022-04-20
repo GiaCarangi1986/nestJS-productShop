@@ -64,3 +64,17 @@ export class CheckController {
     });
   }
 }
+
+@Controller('check_additionally')
+export class CheckAdditionallyController {
+  constructor(private readonly checkService: CheckService) {}
+
+  @Delete(':id')
+  async remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
+    return this.checkService
+      .delete(+id, false, data.isCheckDelay, true)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
+  }
+}

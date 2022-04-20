@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CheckService } from './check.service';
-import { CheckController } from './check.controller';
+import {
+  CheckController,
+  CheckAdditionallyController,
+} from './check.controller';
 import { Check } from '../entities/Check';
 import { CheckLineModule } from 'src/checkLines/checkLines.module';
 import { BonusCardModule } from 'src/bonusCard/bonusCard.module';
@@ -17,6 +20,6 @@ import { DeliveryLineModule } from 'src/deliveryLine/deliveryLine.module';
     DeliveryLineModule,
   ],
   providers: [CheckService],
-  controllers: [CheckController],
+  controllers: [CheckController, CheckAdditionallyController],
 })
 export class CheckModule {}
