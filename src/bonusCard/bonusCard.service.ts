@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
+
+import { BonusCardOwnerService } from 'src/bonusCardOwner/bonusCardOwner.service';
 
 @Injectable()
 export class BonusCardService {
   constructor(
     @InjectRepository(BonusCard)
     private bonusCardRepository: Repository<BonusCard>,
+    private readonly bonusCardOwnerService: BonusCardOwnerService,
   ) {}
 
   async findById(id: number): Promise<BonusCard> {
@@ -43,10 +46,27 @@ export class BonusCardService {
     if (!value) {
       return [];
     } else {
-      // если надо fio, то еще по той фигня отдельно делать надо
-      const data = await this.bonusCardRepository.find({
-        where: { id: Like(value) },
-      });
+      const bonusCardOwnerns = await this.bonusCardOwnerService.findAllSearch(
+        value,
+      );
+      const data: BonusCard[] = [];
+      if (Number.isNaN(Number(value))) {
+        for (const card of bonusCardOwnerns) {
+          const dataEl = await this.bonusCardRepository.findOne({
+            where: { bonusCardOwnerFK: card.id },
+          });
+          data.push(dataEl);
+        }
+      } else {
+        const dataEls = await this.bonusCardRepository
+          .createQueryBuilder('BonusCard')
+          .where('CONVERT(VARCHAR(20), BonusCard.id) LIKE :val', {
+            val: `%${value}%`,
+          })
+          .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
+          .getMany();
+        data.push(...dataEls);
+      }
 
       const serBonusCards = [];
       for (const bonusCard of data) {

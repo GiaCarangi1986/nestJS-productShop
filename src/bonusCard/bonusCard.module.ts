@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BonusCardService } from './bonusCard.service';
 import { BonusCard } from '../entities/BonusCard';
 import { BonusCardController } from './bonusCard.controller';
+import { BonusCardOwnerModule } from 'src/bonusCardOwner/bonusCardOwner.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BonusCard])],
+  imports: [BonusCardOwnerModule, TypeOrmModule.forFeature([BonusCard])],
   providers: [BonusCardService],
   controllers: [BonusCardController],
   exports: [BonusCardService],
