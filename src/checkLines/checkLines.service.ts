@@ -19,15 +19,15 @@ export class CheckLineService {
   }
 
   async createCheckLinesArr(checkLineArray: CheckLineCreateDto[]) {
-    checkLineArray.forEach(async (line) => {
+    for (const line of checkLineArray) {
       await this.checkLineRepository.save(line);
-    });
+    }
   }
 
   async deleteArr(idArr: Array<number>) {
-    idArr.forEach(async (id) => {
+    for (const id of idArr) {
       await this.checkLineRepository.delete(id);
-    });
+    }
   }
 
   async updateOne(checkLine: CheckLine) {

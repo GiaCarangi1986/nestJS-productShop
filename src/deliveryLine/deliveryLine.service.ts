@@ -36,11 +36,11 @@ export class DeliveryLineService {
   }
 
   async updateArr(deliveryLines: UpdateCountDeliveryLineDto[]) {
-    deliveryLines.forEach(async (line) => {
+    for (const line of deliveryLines) {
       await this.deliveryLineRepository.update(line.id, {
         productCount: line.deltaCount,
       });
-    });
+    }
   }
 
   async findByProductFK(id: number) {

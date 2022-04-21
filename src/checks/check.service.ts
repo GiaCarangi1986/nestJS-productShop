@@ -128,11 +128,10 @@ export class CheckService {
 
     const checkLines: CheckLineCreateDto[] = [];
     const deliveryLines: UpdateCountDeliveryLineDto[] = [];
-    let index: number;
 
-    for (index = 0; index < checkData.checkLines.length; index++) {
+    for (const line of checkData.checkLines) {
       const updatedLine = {
-        ...checkData.checkLines[index],
+        ...line,
         checkFK: createdCheck,
       };
       checkLines.push(updatedLine);
