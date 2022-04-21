@@ -1,5 +1,4 @@
 import { Check } from 'src/entities/Check';
-import { CheckLine } from 'src/entities/CheckLine';
 import { GetAllChecksDtoQS } from './dto/getAll-check.dto';
 
 const serializerCheckForDB = async (check: Check) => ({
@@ -10,6 +9,7 @@ const serializerCheckForDB = async (check: Check) => ({
   bonusPop: check.bonusCount,
   paidedCheck: check.paid,
   changedCheck: check.changedCheck,
+  mayActions: new Date().getTime() - check.dateTime.getTime() <= 3600000 * 3, // Можно редакт и удалять, если прошло не более 3 часов
 });
 
 const serializerCheckFromQS = (check: GetAllChecksDtoQS) => ({

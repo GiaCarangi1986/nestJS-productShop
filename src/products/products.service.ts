@@ -29,7 +29,10 @@ export class ProductService {
         manufacturer: product.manufacturerFK?.title || '',
         unit: product.measurementUnitsFK.title,
         count: delivLine.productCount,
-        price: product.priceNow,
+        price: product.saleFK
+          ? product.priceNow -
+            product.priceNow * (product.saleFK.discountPercent / 100)
+          : product.priceNow,
         sale: product.saleFK?.id ? true : false,
         maybeOld: product.maybeOld,
       });
