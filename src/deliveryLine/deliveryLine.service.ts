@@ -12,19 +12,15 @@ export class DeliveryLineService {
   ) {}
 
   async deltaCount(productFK: number, deltaCount: number) {
-    const deliveryLines = await this.deliveryLineRepository.find({
+    const deliveryLineOld = await this.deliveryLineRepository.findOne({
       where: { productFK },
     });
 
-    if (!deliveryLines.length) {
+    if (!deliveryLineOld) {
       throw {
         message: `Не существует продукта с id = ${productFK}`,
       };
     }
-
-    const deliveryLineOld = await this.deliveryLineRepository.findOne(
-      deliveryLines[0].id,
-    );
 
     const delta = deliveryLineOld.productCount - deltaCount;
     if (delta < 0) {
@@ -34,7 +30,7 @@ export class DeliveryLineService {
     }
 
     return {
-      id: deliveryLines[0].id,
+      id: deliveryLineOld.id,
       deltaCount: delta,
     };
   }

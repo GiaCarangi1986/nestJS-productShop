@@ -135,7 +135,7 @@ export class CheckService {
         checkFK: createdCheck,
       };
       checkLines.push(updatedLine);
-
+      // тут хрень какая то неясно для чего и откуда"
       await this.deliveryLineService
         .deltaCount(+updatedLine.productFK, updatedLine.productCount)
         .then((res) => deliveryLines.push(res))
