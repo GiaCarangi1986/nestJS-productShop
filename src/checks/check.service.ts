@@ -84,6 +84,7 @@ export class CheckService {
 
     await (async () => {
       if (checkData.changedCheck) {
+        // надо прибавить кол-во которое было в пред чеке, чтобы потом спокойно вычесть новое
         const deliveryLines: UpdateCountDeliveryLineDto[] = [];
         prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
         if (!prevCheck) {
@@ -135,7 +136,7 @@ export class CheckService {
         checkFK: createdCheck,
       };
       checkLines.push(updatedLine);
-      // тут хрень какая то неясно для чего и откуда"
+
       await this.deliveryLineService
         .deltaCount(+updatedLine.productFK, updatedLine.productCount)
         .then((res) => deliveryLines.push(res))

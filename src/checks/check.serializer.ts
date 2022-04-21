@@ -35,7 +35,7 @@ const serializerCheckWithLineForDB = async (check: Check) => {
   const lineSer = [];
   for (const line of check.checkLines) {
     lineSer.push({
-      id: line.id,
+      productId: line.productFK.id,
       productCount: line.productCount,
       price: line.price,
       oldProduct: line.oldProduct,
