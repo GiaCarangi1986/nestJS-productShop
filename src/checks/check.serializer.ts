@@ -42,8 +42,8 @@ const serializerCheckWithLineForDB = async (check: Check) => {
       productName: line.productFK?.manufacturerFK
         ? `${line.productFK.title}, ${line.productFK?.manufacturerFK?.title}`
         : line.productFK.title,
-      mayBeOld: line.productFK.maybeOld,
-      sale: line.productFK.saleFK,
+      maybeOld: line.productFK.maybeOld,
+      sale: line.productFK.saleFK.id,
     });
   }
   return { ...checkSer, checkLines: lineSer };
