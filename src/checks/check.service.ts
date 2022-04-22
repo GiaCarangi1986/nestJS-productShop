@@ -46,8 +46,8 @@ export class CheckService {
   }: GetAllChecksDto) {
     const overdueChecks = await this.checkRepository.find({
       where: {
-        dateTime: Raw((date) => `${date} > :timeOut`, {
-          timeOut: new Date(timeOut),
+        dateTime: Raw((date) => `${date} < :timeOut`, {
+          timeOut: new Date(new Date().getTime() - timeOut),
         }),
         paid: false,
       },
