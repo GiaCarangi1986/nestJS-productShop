@@ -12,6 +12,7 @@ import {
   serializerCheckForDB,
   serializerCheckWithLineForDB,
 } from './check.serializer';
+import { timeOut } from 'src/const';
 
 import { BonusCardService } from 'src/bonusCard/bonusCard.service';
 
@@ -43,6 +44,19 @@ export class CheckService {
     dateStart,
     dateEnd,
   }: GetAllChecksDto) {
+    const overdueChecks = await this.checkRepository.find({
+      where: {
+        dateTime: Raw((date) => `${date} > :timeOut`, {
+          timeOut: new Date(timeOut),
+        }),
+        paid: false,
+      },
+    });
+
+    for (const check of overdueChecks) {
+      await this.delete(check.id, false);
+    }
+
     const where: WhereCheckDto = {
       dateTime: Raw((date) => `${date} >= :dateStart AND ${date} <= :dateEnd`, {
         dateStart,
@@ -183,7 +197,6 @@ export class CheckService {
   async delete(
     id: number,
     needUpdateDeliveryLines: Boolean = false,
-    isCheckDelay: Boolean = false,
     dirty?: Boolean,
   ) {
     let checksForDelete: number[] = [];
@@ -211,7 +224,7 @@ export class CheckService {
           const deleteLines: Array<number> = [];
 
           for (const line of checkLines) {
-            if (needUpdateDeliveryLines && !isCheckDelay) {
+            if (needUpdateDeliveryLines) {
               const data = await this.deliveryLineService.deltaCount(
                 +line.productFK.id,
                 -1 * line.productCount,
@@ -221,7 +234,7 @@ export class CheckService {
             deleteLines.push(line.id);
           }
 
-          if (needUpdateDeliveryLines && !isCheckDelay) {
+          if (needUpdateDeliveryLines) {
             await this.deliveryLineService.updateArr(deliveryLines);
           }
           await this.checkLineService.deleteArr(deleteLines);

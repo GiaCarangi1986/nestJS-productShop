@@ -50,11 +50,9 @@ export class CheckController {
 
   @Delete(':id')
   async remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
-    return this.checkService
-      .delete(+id, true, data.isCheckDelay)
-      .catch((err) => {
-        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-      });
+    return this.checkService.delete(+id, !data.isCheckDelay).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
   }
 
   @Patch(':id') // запрос на историю изменений
@@ -70,11 +68,9 @@ export class CheckAdditionallyController {
   constructor(private readonly checkService: CheckService) {}
 
   @Delete(':id')
-  async remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
-    return this.checkService
-      .delete(+id, false, data.isCheckDelay, true)
-      .catch((err) => {
-        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-      });
+  async remove(@Param('id') id: number) {
+    return this.checkService.delete(+id, false, true).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
   }
 }
