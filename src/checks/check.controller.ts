@@ -43,14 +43,14 @@ export class CheckController {
     await this.checkService.create(data).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
-    return this.checkService.delete(+id).catch((err) => {
+    return this.checkService.delete(+id, true).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 
   @Delete(':id')
   async remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
-    return this.checkService.delete(+id, !data.isCheckDelay).catch((err) => {
+    return this.checkService.delete(+id, true).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

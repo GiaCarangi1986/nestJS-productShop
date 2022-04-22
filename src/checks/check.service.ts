@@ -22,8 +22,8 @@ import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
 import { UserService } from 'src/users/users.service';
 import { CheckLine } from 'src/entities/CheckLine';
 
-import { DeliveryLineService } from 'src/deliveryLine/deliveryLine.service';
-import { UpdateCountDeliveryLineDto } from 'src/deliveryLine/dto/updateCount-deliveryLine.dto';
+import { ProductService } from 'src/products/products.service';
+import { UpdateCountProductDto } from 'src/products/dto/updateCount-product';
 
 @Injectable()
 export class CheckService {
@@ -33,7 +33,7 @@ export class CheckService {
     private readonly bonusCardService: BonusCardService,
     private readonly checkLineService: CheckLineService,
     private readonly userService: UserService,
-    private readonly deliveryLineService: DeliveryLineService,
+    private readonly productService: ProductService,
   ) {}
 
   async getAll({
@@ -99,7 +99,7 @@ export class CheckService {
     await (async () => {
       if (checkData.changedCheck) {
         // надо прибавить кол-во которое было в пред чеке, чтобы потом спокойно вычесть новое
-        const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+        const products: UpdateCountProductDto[] = [];
         prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
         if (!prevCheck) {
           throw {
@@ -111,14 +111,14 @@ export class CheckService {
           await this.checkLineService.getAllByCheckId(prevCheck.id);
 
         for (const line of checkLines) {
-          const data = await this.deliveryLineService.deltaCount(
+          const data = await this.productService.deltaCount(
             +line.productFK.id,
             -1 * line.productCount,
           );
-          deliveryLines.push(data);
+          products.push(data);
         }
 
-        await this.deliveryLineService.updateArr(deliveryLines);
+        await this.productService.updateArr(products);
       }
     })();
 
@@ -141,7 +141,7 @@ export class CheckService {
     let createdCheck = await this.checkRepository.save(check);
 
     const checkLines: CheckLineCreateDto[] = [];
-    const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+    const products: UpdateCountProductDto[] = [];
 
     for (const line of checkData.checkLines) {
       const updatedLine = {
@@ -150,16 +150,16 @@ export class CheckService {
       };
       checkLines.push(updatedLine);
 
-      await this.deliveryLineService
+      await this.productService
         .deltaCount(+updatedLine.productFK, updatedLine.productCount)
-        .then((res) => deliveryLines.push(res))
+        .then((res) => products.push(res))
         .catch(async (err) => {
           await this.checkRepository.delete(createdCheck.id);
           throw { message: err.message };
         });
     }
 
-    await this.deliveryLineService.updateArr(deliveryLines);
+    await this.productService.updateArr(products);
     await this.checkLineService.createCheckLinesArr(checkLines);
 
     if (checkData.changedCheck) {
@@ -220,22 +220,22 @@ export class CheckService {
         }
 
         if (checksForDelete.length > 0) {
-          const deliveryLines: UpdateCountDeliveryLineDto[] = [];
+          const products: UpdateCountProductDto[] = [];
           const deleteLines: Array<number> = [];
 
           for (const line of checkLines) {
             if (needUpdateDeliveryLines) {
-              const data = await this.deliveryLineService.deltaCount(
+              const data = await this.productService.deltaCount(
                 +line.productFK.id,
                 -1 * line.productCount,
               );
-              deliveryLines.push(data);
+              products.push(data);
             }
             deleteLines.push(line.id);
           }
 
           if (needUpdateDeliveryLines) {
-            await this.deliveryLineService.updateArr(deliveryLines);
+            await this.productService.updateArr(products);
           }
           await this.checkLineService.deleteArr(deleteLines);
         }

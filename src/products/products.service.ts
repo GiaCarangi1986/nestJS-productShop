@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { DeliveryLineService } from 'src/deliveryLine/deliveryLine.service';
 import { Product } from 'src/entities/Product';
+import { UpdateCountProductDto } from './dto/updateCount-product';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
-    private readonly deliveryLineService: DeliveryLineService,
   ) {}
 
   async getAllById(id: number): Promise<Product[]> {
@@ -20,15 +19,12 @@ export class ProductService {
     const products = await this.productsRepository.find();
     const serProducts = [];
     for (const product of products) {
-      const delivLine = await this.deliveryLineService.findByProductFK(
-        product.id,
-      );
       serProducts.push({
         id: product.id,
         title: product.title,
         manufacturer: product.manufacturerFK?.title || '',
         unit: product.measurementUnitsFK.title,
-        count: delivLine.productCount,
+        count: product.count,
         price: product.saleFK
           ? product.priceNow -
             product.priceNow * (product.saleFK.discountPercent / 100)
@@ -38,5 +34,35 @@ export class ProductService {
       });
     }
     return serProducts;
+  }
+
+  async deltaCount(id: number, deltaCount: number) {
+    const productOld = await this.productsRepository.findOne(id);
+
+    if (!productOld) {
+      throw {
+        message: `Не существует продукта с id = ${id}`,
+      };
+    }
+
+    const delta = productOld.count - deltaCount;
+    if (delta < 0) {
+      throw {
+        message: `Можно купить максимум ${productOld.count} шт/кг для '${productOld.title}'`,
+      };
+    }
+
+    return {
+      id: productOld.id,
+      deltaCount: delta,
+    };
+  }
+
+  async updateArr(products: UpdateCountProductDto[]) {
+    for (const product of products) {
+      await this.productsRepository.update(product.id, {
+        count: product.deltaCount,
+      });
+    }
   }
 }

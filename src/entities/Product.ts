@@ -27,6 +27,9 @@ export class Product {
   @Column('decimal', { name: 'priceNow', precision: 10, scale: 2 })
   priceNow: number;
 
+  @Column('int', { name: 'count' })
+  count: number;
+
   @Column('bit', { name: 'isArchive' })
   isArchive: boolean;
 
