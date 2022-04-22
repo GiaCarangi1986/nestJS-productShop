@@ -40,12 +40,13 @@ export class CheckController {
 
   @Put(':id') // запрос на оплату отложенного чека
   async updatePaid(@Param('id') id: number, @Body() data: CreateCheckDto) {
+    const delId = await this.checkService.delete(+id, true).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
     await this.checkService.create(data).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
-    return this.checkService.delete(+id, true).catch((err) => {
-      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-    });
+    return delId;
   }
 
   @Delete(':id')
