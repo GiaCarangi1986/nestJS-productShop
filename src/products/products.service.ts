@@ -11,8 +11,12 @@ export class ProductService {
     private productsRepository: Repository<Product>,
   ) {}
 
-  async getAllById(id: number): Promise<Product[]> {
-    return this.productsRepository.find({ where: { id } });
+  async getById(id: number): Promise<Product> {
+    return this.productsRepository.findOne(id);
+  }
+
+  async updateCount(id: number, count: number) {
+    return this.productsRepository.update(id, { count });
   }
 
   async getAll() {

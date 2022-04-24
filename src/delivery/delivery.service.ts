@@ -13,4 +13,8 @@ export class DeliveryService {
   async getById(deliveryFK: number): Promise<Delivery> {
     return await this.deliveryRepository.findOne(deliveryFK);
   }
+
+  async create(date: Date): Promise<Delivery> {
+    return await this.deliveryRepository.save({ date });
+  }
 }
