@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { DeliveryLine } from 'src/entities/DeliveryLine';
 import { CreateDeliveryLineDto } from './dto/delivetyLine-create.dto';
 import { CreateDeliveryLineDBDto } from './dto/deliveryLine-createDB.dto';
+import { GetDeliveryLineDto } from './dto/deliveryLine-get.dto';
 import { week } from 'src/const';
 
 import { DeliveryService } from 'src/delivery/delivery.service';
@@ -47,7 +48,8 @@ export class DeliveryLineService {
     const checkLines = await this.checkService.getAllByPeriod(
       new Date(new Date().getTime() - week),
     );
-    const products = await this.productService.getAllForMakeDelivery();
+    const products: GetDeliveryLineDto[] =
+      await this.productService.getAllForMakeDelivery();
 
     for (const checkLine of checkLines) {
       for (const product of products) {
@@ -62,8 +64,14 @@ export class DeliveryLineService {
       if (product.count < 0) {
         product.count = 0;
       }
+      product.totalCost = product.count * product.price;
     }
 
-    return products;
+    const latestDate = await this.deliveryService.getLast();
+
+    return {
+      productList: products,
+      latestDate: latestDate.date,
+    };
   }
 }

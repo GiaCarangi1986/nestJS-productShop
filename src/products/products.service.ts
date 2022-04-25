@@ -46,7 +46,7 @@ export class ProductService {
     return Math.round((Math.random() * (max - min + 1) + min) * 100) / 100;
   }
 
-  async getAllForMakeDelivery(): Promise<Product[]> {
+  async getAllForMakeDelivery() {
     const products = await this.productsRepository.find({
       order: {
         title: 'ASC',
