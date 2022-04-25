@@ -7,7 +7,6 @@ import { CreateDeliveryLineDBDto } from './dto/deliveryLine-createDB.dto';
 
 import { DeliveryService } from 'src/delivery/delivery.service';
 import { ProductService } from 'src/products/products.service';
-import { UpdateCountProductDto } from 'src/products/dto/updateCount-product';
 
 @Injectable()
 export class DeliveryLineService {
@@ -32,7 +31,10 @@ export class DeliveryLineService {
       };
 
       this.deliveryLineRepository.save(deliveryLine);
-      this.productService.updateCount(line.productFK, line.productCount);
+      this.productService.updateCount(
+        line.productFK,
+        product.count + line.productCount,
+      );
     }
 
     return delivery.id;

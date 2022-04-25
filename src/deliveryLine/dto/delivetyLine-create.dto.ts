@@ -6,6 +6,5 @@ class DeliveryLineOne {
 
 export class CreateDeliveryLineDto {
   readonly deliveryLines: DeliveryLineOne[];
-  readonly deliveryFK: number;
   readonly date: Date;
 }
