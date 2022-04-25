@@ -19,7 +19,7 @@ export class ProductService {
     return this.productsRepository.update(id, { count });
   }
 
-  async getAll() {
+  async getAll(): Promise<Product[]> {
     const products = await this.productsRepository.find();
     const serProducts = [];
     for (const product of products) {
@@ -35,6 +35,35 @@ export class ProductService {
           : product.priceNow,
         sale: product.saleFK?.id ? true : false,
         maybeOld: product.maybeOld,
+      });
+    }
+    return serProducts;
+  }
+
+  getRandomInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.round((Math.random() * (max - min + 1) + min) * 100) / 100;
+  }
+
+  async getAllForMakeDelivery(): Promise<Product[]> {
+    const products = await this.productsRepository.find({
+      order: {
+        title: 'ASC',
+      },
+    });
+    const serProducts = [];
+    for (const product of products) {
+      serProducts.push({
+        id: product.id,
+        title: product.title,
+        manufacturer: product.manufacturerFK?.title || '',
+        unit: product.measurementUnitsFK.title,
+        count: -1 * product.count,
+        price: this.getRandomInclusive(
+          product.priceNow * 0.55,
+          product.priceNow * 0.95,
+        ),
       });
     }
     return serProducts;

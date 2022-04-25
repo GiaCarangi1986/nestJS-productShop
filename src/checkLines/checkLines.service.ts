@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Raw } from 'typeorm';
 import { CheckLineCreateDto } from './dto/create-checkLine.dto';
 import { CheckLine } from '../entities/CheckLine';
 

@@ -21,5 +21,6 @@ import { ProductsModule } from 'src/products/product.module';
   ],
   providers: [CheckService],
   controllers: [CheckController, CheckAdditionallyController],
+  exports: [CheckService],
 })
 export class CheckModule {}

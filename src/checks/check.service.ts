@@ -267,4 +267,20 @@ export class CheckService {
     }
     return serCheckForHistory;
   }
+
+  async getAllByPeriod(dateStart: Date): Promise<CheckLine[]> {
+    const checks = await this.checkRepository.find({
+      where: {
+        dateTime: Raw((date) => `${date} >= :timeOut`, {
+          timeOut: dateStart,
+        }),
+      },
+      relations: ['checkLines'],
+    });
+    const checkLines = [];
+    for (const line of checks) {
+      checkLines.push(...line.checkLines);
+    }
+    return checkLines;
+  }
 }

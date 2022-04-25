@@ -4,9 +4,11 @@ import { Repository } from 'typeorm';
 import { DeliveryLine } from 'src/entities/DeliveryLine';
 import { CreateDeliveryLineDto } from './dto/delivetyLine-create.dto';
 import { CreateDeliveryLineDBDto } from './dto/deliveryLine-createDB.dto';
+import { week } from 'src/const';
 
 import { DeliveryService } from 'src/delivery/delivery.service';
 import { ProductService } from 'src/products/products.service';
+import { CheckService } from 'src/checks/check.service';
 
 @Injectable()
 export class DeliveryLineService {
@@ -15,6 +17,7 @@ export class DeliveryLineService {
     private deliveryLineRepository: Repository<DeliveryLine>,
     private readonly deliveryService: DeliveryService,
     private readonly productService: ProductService,
+    private readonly checkService: CheckService,
   ) {}
 
   async create(deliveryLineData: CreateDeliveryLineDto) {
@@ -38,5 +41,29 @@ export class DeliveryLineService {
     }
 
     return delivery.id;
+  }
+
+  async getAllForMakeDelivery() {
+    const checkLines = await this.checkService.getAllByPeriod(
+      new Date(new Date().getTime() - week),
+    );
+    const products = await this.productService.getAllForMakeDelivery();
+
+    for (const checkLine of checkLines) {
+      for (const product of products) {
+        if (checkLine.productFK.id === product.id) {
+          product.count += checkLine.productCount;
+          break;
+        }
+      }
+    }
+
+    for (const product of products) {
+      if (product.count < 0) {
+        product.count = 0;
+      }
+    }
+
+    return products;
   }
 }
