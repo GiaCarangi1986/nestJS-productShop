@@ -7,7 +7,7 @@ import {
   Get,
 } from '@nestjs/common';
 import { DeliveryLineService } from './deliveryLine.service';
-import { CreateDeliveryLineDto } from './dto/delivetyLine-create.dto';
+import { CreateDeliveryLineDto } from './dto/create-deliveryLine.dto';
 
 @Controller('delivery_line')
 export class DeliveryLineController {

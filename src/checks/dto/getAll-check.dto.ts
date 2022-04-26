@@ -1,3 +1,5 @@
+import { FindOperator } from 'typeorm';
+
 export class GetAllChecksDto {
   page: number;
   pageSize: number;
@@ -14,4 +16,11 @@ export class GetAllChecksDtoQS {
   delayedShow: string; // был ли чек отложен
   dateStart?: Date;
   dateEnd?: Date;
+}
+
+export class WhereCheckDto {
+  parentCheckId: null;
+  dateTime: FindOperator<Date>;
+  changedCheck?: boolean; // был ли чек редактирован
+  paid?: boolean; // был ли чек отложен
 }

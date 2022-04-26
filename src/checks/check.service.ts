@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Raw } from 'typeorm';
-import { CreateCheckDto } from './dto/create-check.dto';
-import { CreateTableCheckDto } from './dto/createTable-check.dto';
-import { GetAllChecksDto } from './dto/getAll-check.dto';
-import { WhereCheckDto } from './dto/where.dto';
+import { CreateCheckDto, CreateTableCheckDto } from './dto/create-check.dto';
+import { GetAllChecksDto, WhereCheckDto } from './dto/getAll-check.dto';
 import { Check } from '../entities/Check';
 import { BonusCard } from '../entities/BonusCard';
 import { User } from '../entities/User';
@@ -23,7 +21,7 @@ import { UserService } from 'src/users/users.service';
 import { CheckLine } from 'src/entities/CheckLine';
 
 import { ProductService } from 'src/products/products.service';
-import { UpdateCountProductDto } from 'src/products/dto/updateCount-product';
+import { UpdateCountProductDto } from 'src/products/dto/updateCount-product.dto';
 
 @Injectable()
 export class CheckService {

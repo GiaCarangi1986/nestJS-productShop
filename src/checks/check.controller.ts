@@ -12,7 +12,6 @@ import {
   Req,
 } from '@nestjs/common';
 import { CreateCheckDto } from './dto/create-check.dto';
-import { DeleteDelayCheckDto } from './dto/deleteDelay-check.dto';
 import { CheckService } from './check.service';
 import { GetAllChecksDtoQS } from './dto/getAll-check.dto';
 import { serializerCheckFromQS } from './check.serializer';
@@ -50,7 +49,7 @@ export class CheckController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number, @Body() data: DeleteDelayCheckDto) {
+  async remove(@Param('id') id: number) {
     return this.checkService.delete(+id, true).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });

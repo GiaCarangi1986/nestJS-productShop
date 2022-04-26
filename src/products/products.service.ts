@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from 'src/entities/Product';
-import { UpdateCountProductDto } from './dto/updateCount-product';
+import { UpdateCountProductDto } from './dto/updateCount-product.dto';
 
 @Injectable()
 export class ProductService {

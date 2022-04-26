@@ -7,7 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { BonusCardService } from './bonusCard.service';
-import { GetSearchListBonusCardDto } from './dto/searchList-bonusCard';
+import { GetSearchListBonusCardDto } from './dto/getAllSearch-bonusCard.dto';
 
 @Controller('bonus_card')
 export class BonusCardController {

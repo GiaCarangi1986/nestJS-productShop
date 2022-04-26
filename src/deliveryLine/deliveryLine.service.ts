@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DeliveryLine } from 'src/entities/DeliveryLine';
-import { CreateDeliveryLineDto } from './dto/delivetyLine-create.dto';
-import { CreateDeliveryLineDBDto } from './dto/deliveryLine-createDB.dto';
-import { GetDeliveryLineDto } from './dto/deliveryLine-get.dto';
+import {
+  CreateDeliveryLineDBDto,
+  CreateDeliveryLineDto,
+} from './dto/create-deliveryLine.dto';
+import { GetDeliveryLineDto } from './dto/getAllForMakeDelivery-deliveryLine.dto';
 import { week } from 'src/const';
 
 import { DeliveryService } from 'src/delivery/delivery.service';
