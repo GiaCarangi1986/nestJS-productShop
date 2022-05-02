@@ -7,7 +7,6 @@ import {
   CreateDeliveryLineDto,
 } from './dto/create-deliveryLine.dto';
 import { GetDeliveryLineDto } from './dto/getAllForMakeDelivery-deliveryLine.dto';
-import { week } from 'src/const';
 
 import { DeliveryService } from 'src/delivery/delivery.service';
 import { ProductService } from 'src/products/products.service';
@@ -46,9 +45,9 @@ export class DeliveryLineService {
     return delivery.id;
   }
 
-  async getAllForMakeDelivery() {
+  async getAllForMakeDelivery(period: number) {
     const checkLines = await this.checkService.getAllByPeriod(
-      new Date(new Date().getTime() - week),
+      new Date(new Date().getTime() - period),
     );
     const products: GetDeliveryLineDto[] =
       await this.productService.getAllForMakeDelivery();

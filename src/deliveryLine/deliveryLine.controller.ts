@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Get,
+  Req,
 } from '@nestjs/common';
 import { DeliveryLineService } from './deliveryLine.service';
 import { CreateDeliveryLineDto } from './dto/create-deliveryLine.dto';
@@ -21,9 +22,12 @@ export class DeliveryLineController {
   }
 
   @Get()
-  async getAll() {
-    return this.deliveryLineService.getAllForMakeDelivery().catch((err) => {
-      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-    });
+  async getAll(@Req() params: any) {
+    const period = +params.query.period;
+    return this.deliveryLineService
+      .getAllForMakeDelivery(period)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
   }
 }
