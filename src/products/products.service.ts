@@ -71,7 +71,7 @@ export class ProductService {
     return serProducts;
   }
 
-  async deltaCount(id: number, deltaCount: number) {
+  async deltaCount(id: number, deltaCount: number, action?: string) {
     const productOld = await this.productsRepository.findOne(id);
 
     if (!productOld) {
@@ -83,7 +83,9 @@ export class ProductService {
     const delta = productOld.count - deltaCount;
     if (delta < 0) {
       throw {
-        message: `Можно купить максимум ${productOld.count} шт/кг для '${productOld.title}'`,
+        message: `Можно ${action || 'купить'} максимум ${
+          productOld.count
+        } шт/кг для '${productOld.title}'`,
       };
     }
 
