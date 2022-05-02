@@ -20,7 +20,9 @@ export class ProductService {
   }
 
   async getAll(): Promise<Product[]> {
-    const products = await this.productsRepository.find();
+    const products = await this.productsRepository.find({
+      order: { title: 'ASC' },
+    });
     const serProducts = [];
     for (const product of products) {
       serProducts.push({
