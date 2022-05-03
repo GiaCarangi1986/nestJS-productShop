@@ -281,4 +281,27 @@ export class CheckService {
     }
     return checkLines;
   }
+
+  async getAllBetweenPeriod(
+    dateStart: Date,
+    dateEnd: Date,
+  ): Promise<CheckLine[]> {
+    const checks = await this.checkRepository.find({
+      where: {
+        dateTime: Raw(
+          (date) => `${date} >= :dateStart AND ${date} <= :dateEnd`,
+          {
+            dateStart,
+            dateEnd,
+          },
+        ),
+      },
+      relations: ['checkLines'],
+    });
+    const checkLines = [];
+    for (const line of checks) {
+      checkLines.push(...line.checkLines);
+    }
+    return checkLines;
+  }
 }

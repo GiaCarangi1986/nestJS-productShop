@@ -2,11 +2,14 @@ import {
   Controller,
   Body,
   Post,
+  Get,
+  Req,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { LoginUserDto } from './dto/login-user.dto';
+import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
 
 @Controller('login')
 export class UserController {
@@ -15,6 +18,19 @@ export class UserController {
   @Post()
   async login(@Body() params: LoginUserDto) {
     return this.userService.login(params).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+}
+
+@Controller('best_sellers')
+export class BestSellersController {
+  constructor(private readonly userService: UserService) {}
+
+  @Get()
+  async getBestSellers(@Req() params: any) {
+    const queryParams: GetBestSellersDtoQS = params.query;
+    return this.userService.getBestSellers(queryParams).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
