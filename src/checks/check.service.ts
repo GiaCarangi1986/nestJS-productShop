@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Raw } from 'typeorm';
 import { CreateCheckDto, CreateTableCheckDto } from './dto/create-check.dto';
@@ -31,6 +31,8 @@ export class CheckService {
     private readonly bonusCardService: BonusCardService,
     private readonly checkLineService: CheckLineService,
     private readonly userService: UserService,
+
+    @Inject(forwardRef(() => ProductService))
     private readonly productService: ProductService,
   ) {}
 

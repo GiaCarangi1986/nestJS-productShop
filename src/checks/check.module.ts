@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CheckService } from './check.service';
 import {
@@ -17,7 +17,7 @@ import { ProductsModule } from 'src/products/product.module';
     CheckLineModule,
     BonusCardModule,
     UserModule,
-    ProductsModule,
+    forwardRef(() => ProductsModule),
   ],
   providers: [CheckService],
   controllers: [CheckController, CheckAdditionallyController],

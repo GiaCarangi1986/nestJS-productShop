@@ -1,14 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from 'src/entities/Product';
 import { UpdateCountProductDto } from './dto/updateCount-product.dto';
+
+import { CheckService } from 'src/checks/check.service';
+
+import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
+
+    @Inject(forwardRef(() => CheckService))
+    private checkService: CheckService,
   ) {}
 
   async getById(id: number): Promise<Product> {
@@ -102,5 +109,44 @@ export class ProductService {
         count: product.deltaCount,
       });
     }
+  }
+
+  async getBestSellers({ dateStart, dateEnd }: GetBestSellersDtoQS) {
+    const checkLines = await this.checkService.getAllBetweenPeriod(
+      dateStart,
+      dateEnd,
+    );
+
+    const products = await this.productsRepository.find();
+    const serProducts = [];
+    for (const product of products) {
+      serProducts.push({
+        title: product.title,
+        countOfSale: 0,
+        manufacturer: product.manufacturerFK?.title,
+        id: product.id,
+        category: product.categoryFK.title,
+      });
+    }
+
+    for (const checkLine of checkLines) {
+      for (const serProduct of serProducts) {
+        if (checkLine.productFK.id === serProduct.id) {
+          serProduct.countOfSale += checkLine.productCount;
+        }
+      }
+    }
+
+    const sortProducts = serProducts.sort(function (a, b) {
+      if (a.countOfSale > b.countOfSale) {
+        return -1;
+      }
+      if (a.countOfSale < b.countOfSale) {
+        return 1;
+      }
+      return a.title > b.title ? 1 : a.title < b.title ? -1 : 0;
+    });
+
+    return sortProducts;
   }
 }
