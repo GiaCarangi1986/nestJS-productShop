@@ -52,6 +52,24 @@ export class CheckLineService {
     });
   }
 
+  calc = (products, line) => {
+    const resLine: RevenueDataDto = {
+      grossProfit: 0,
+      revenue: 0,
+      usedBonuses: 0,
+    };
+    for (const product of products) {
+      if (product.id === line.productFK.id) {
+        resLine.grossProfit +=
+          (line.price - product.averageCost) * line.productCount;
+        break;
+      }
+    }
+    resLine.revenue += line.price * line.productCount;
+    resLine.usedBonuses += line.checkFK.bonusCount;
+    return resLine;
+  };
+
   async getRevenueData({ dateStart, dateEnd }: GetBestSellersDtoQS) {
     const deliveryLines = await this.deliveryService.getAllBetweenPeriod(
       dateStart,
@@ -85,37 +103,17 @@ export class CheckLineService {
       for (const resLine of res) {
         if (date.getTime() === new Date(resLine.date).getTime()) {
           contains = true;
-          for (const product of products) {
-            if (product.id === line.productFK.id) {
-              resLine.grossProfit +=
-                (line.price - product.averageCost) * line.productCount;
-              break;
-            }
-          }
-          resLine.revenue += line.price * line.productCount;
-          resLine.usedBonuses += line.checkFK.bonusCount;
+          const resLineCalc = this.calc(products, line);
+          resLine.grossProfit += resLineCalc.grossProfit;
+          resLine.revenue += resLineCalc.revenue;
+          resLine.usedBonuses += resLineCalc.usedBonuses;
           break;
         }
       }
       if (!contains) {
-        const resLine: RevenueDataDto = {
-          grossProfit: 0,
-          revenue: 0,
-          usedBonuses: 0,
-        };
-        for (const product of products) {
-          // вынести в ф-цию
-          if (product.id === line.productFK.id) {
-            resLine.grossProfit +=
-              (line.price - product.averageCost) * line.productCount;
-            break;
-          }
-        }
-        resLine.revenue += line.price * line.productCount;
-        resLine.usedBonuses += line.checkFK.bonusCount;
         res.push({
           date,
-          ...resLine,
+          ...this.calc(products, line),
         });
       }
     }
