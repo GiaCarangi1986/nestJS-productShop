@@ -66,6 +66,7 @@ export class ProductService {
           product.priceNow * 0.55,
           product.priceNow * 0.95,
         ),
+        expirationDate: product.expirationDate,
       });
     }
     return serProducts;

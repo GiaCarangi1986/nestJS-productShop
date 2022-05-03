@@ -7,6 +7,7 @@ import {
   CreateDeliveryLineDto,
 } from './dto/create-deliveryLine.dto';
 import { GetDeliveryLineDto } from './dto/getAllForMakeDelivery-deliveryLine.dto';
+import { week, day, month, millisecondsDay } from 'src/const';
 
 import { DeliveryService } from 'src/delivery/delivery.service';
 import { ProductService } from 'src/products/products.service';
@@ -55,7 +56,32 @@ export class DeliveryLineService {
     for (const checkLine of checkLines) {
       for (const product of products) {
         if (checkLine.productFK.id === product.id) {
-          product.count += checkLine.productCount;
+          switch (period) {
+            case day * millisecondsDay:
+              if (product.expirationDate <= week) {
+                product.count += checkLine.productCount;
+              }
+              break;
+
+            case week * millisecondsDay:
+              if (
+                product.expirationDate > week &&
+                product.expirationDate <= month
+              ) {
+                product.count += checkLine.productCount;
+              }
+              break;
+
+            case month * millisecondsDay:
+              if (product.expirationDate > month || !product.expirationDate) {
+                product.count += checkLine.productCount;
+              }
+              break;
+
+            default:
+              product.count += checkLine.productCount;
+              break;
+          }
           break;
         }
       }

@@ -6,4 +6,5 @@ export class GetDeliveryLineDto {
   unit: string;
   count: number;
   price: number;
+  expirationDate: number;
 }

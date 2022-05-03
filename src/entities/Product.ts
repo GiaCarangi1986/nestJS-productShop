@@ -30,6 +30,9 @@ export class Product {
   @Column('int', { name: 'count' })
   count: number;
 
+  @Column('int', { name: 'expirationDate', nullable: true })
+  expirationDate: number | null;
+
   @Column('bit', { name: 'isArchive' })
   isArchive: boolean;
 
