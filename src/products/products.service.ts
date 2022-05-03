@@ -79,6 +79,20 @@ export class ProductService {
     return serProducts;
   }
 
+  async getAllForRevenueData() {
+    const products = await this.productsRepository.find();
+    const serProducts = [];
+    for (const product of products) {
+      serProducts.push({
+        id: product.id,
+        count: 0,
+        cost: 0,
+        averageCost: 0,
+      });
+    }
+    return serProducts;
+  }
+
   async deltaCount(id: number, deltaCount: number, action?: string) {
     const productOld = await this.productsRepository.findOne(id);
 

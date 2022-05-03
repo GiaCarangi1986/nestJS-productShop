@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { Delivery } from 'src/entities/Delivery';
+
+import { DeliveryLine } from 'src/entities/DeliveryLine';
 
 @Injectable()
 export class DeliveryService {
@@ -21,5 +23,25 @@ export class DeliveryService {
 
   async create(date: Date): Promise<Delivery> {
     return await this.deliveryRepository.save({ date });
+  }
+
+  async getAllBetweenPeriod(
+    dateStart: Date,
+    dateEnd: Date,
+  ): Promise<DeliveryLine[]> {
+    const delivery = await this.deliveryRepository.find({
+      where: {
+        date: Raw((date) => `${date} >= :dateStart AND ${date} <= :dateEnd`, {
+          dateStart,
+          dateEnd,
+        }),
+      },
+      relations: ['deliveryLines'],
+    });
+    const deliveryLines = [];
+    for (const line of delivery) {
+      deliveryLines.push(...line.deliveryLines);
+    }
+    return deliveryLines;
   }
 }
