@@ -53,9 +53,28 @@ export class UserService {
         fio: user.fio,
         sales: 0,
         role: user.roleFK.title,
+        id: user.id,
       });
     }
-    const e = 1;
-    return [];
+
+    for (const checkLine of checkLines) {
+      for (const serUser of serUsers) {
+        if (checkLine.checkFK.userFK.id === serUser.id) {
+          serUser.sales += checkLine.price * checkLine.productCount;
+        }
+      }
+    }
+
+    const sortUsers = serUsers.sort(function (a, b) {
+      if (a.sales > b.sales) {
+        return -1;
+      }
+      if (a.sales < b.sales) {
+        return 1;
+      }
+      return a.fio > b.fio ? 1 : a.fio < b.fio ? -1 : 0;
+    });
+
+    return sortUsers;
   }
 }
