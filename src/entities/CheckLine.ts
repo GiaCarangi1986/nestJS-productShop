@@ -15,7 +15,7 @@ export class CheckLine {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('int', { name: 'productCount' })
+  @Column('decimal', { name: 'productCount', precision: 10, scale: 2 })
   productCount: number;
 
   @Column('decimal', { name: 'price', precision: 10, scale: 2 })
