@@ -290,6 +290,7 @@ export class CheckService {
   ): Promise<CheckLine[]> {
     const checks = await this.checkRepository.find({
       where: {
+        paid: true,
         dateTime: Raw(
           (date) => `${date} >= :dateStart AND ${date} <= :dateEnd`,
           {
