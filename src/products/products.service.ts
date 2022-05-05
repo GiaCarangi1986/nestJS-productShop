@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
 import { Product } from 'src/entities/Product';
 import { UpdateCountProductDto } from './dto/updateCount-product.dto';
 
@@ -20,6 +20,10 @@ export class ProductService {
 
   async getById(id: number): Promise<Product> {
     return this.productsRepository.findOne(id);
+  }
+
+  async findForSale() {
+    return this.productsRepository.find({ where: { saleFK: Not(IsNull()) } });
   }
 
   async updateCount(id: number, count: number) {

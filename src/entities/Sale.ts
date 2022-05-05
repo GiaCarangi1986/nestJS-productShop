@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Product } from './Product';
-import { SaleKinds } from './SaleKinds';
 
 @Index('PK_Sale', ['id'], { unique: true })
 @Entity('Sale', { schema: 'dbo' })
@@ -25,15 +24,6 @@ export class Sale {
   @Column('int', { name: 'discountPercent', nullable: true })
   discountPercent: number | null;
 
-  @Column('int', { name: 'productNumberOnHand', nullable: true })
-  productNumberOnHand: number | null;
-
   @OneToMany(() => Product, (product) => product.saleFK)
   products: Product[];
-
-  @ManyToOne(() => SaleKinds, (saleKinds) => saleKinds.sales, {
-    eager: true,
-  })
-  @JoinColumn([{ name: 'saleKindsFK', referencedColumnName: 'id' }])
-  saleKindsFK: SaleKinds;
 }

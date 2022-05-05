@@ -11,6 +11,7 @@ import { DeliveryModule } from './delivery/delivery.module';
 import { DeliveryLineModule } from './deliveryLine/deliveryLine.module';
 import { BonusCardOwnerModule } from './bonusCardOwner/bonusCardOwner.module';
 import { WriteOffModule } from './writeOff/writeOff.module';
+import { SaleModule } from './sale/sale.module';
 
 import { Check } from './entities/Check';
 import { BonusCard } from './entities/BonusCard';
@@ -26,7 +27,6 @@ import { Delivery } from './entities/Delivery';
 import { Category } from './entities/Category';
 import { MeasurementUnits } from './entities/MeasurementUnits';
 import { Sale } from './entities/Sale';
-import { SaleKinds } from './entities/SaleKinds';
 import { Manufacturer } from './entities/Manufacturer';
 
 @Module({
@@ -53,7 +53,6 @@ import { Manufacturer } from './entities/Manufacturer';
         Category,
         MeasurementUnits,
         Sale,
-        SaleKinds,
         Manufacturer,
       ],
       autoLoadEntities: true,
@@ -67,6 +66,7 @@ import { Manufacturer } from './entities/Manufacturer';
     DeliveryLineModule,
     BonusCardOwnerModule,
     WriteOffModule,
+    SaleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
