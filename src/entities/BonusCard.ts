@@ -19,6 +19,9 @@ export class BonusCard {
   @Column('decimal', { name: 'bonusCount', precision: 10, scale: 2 })
   bonusCount: number;
 
+  @Column('bit', { name: 'active' })
+  active: boolean;
+
   @ManyToOne(
     () => BonusCardOwner,
     (bonusCardOwner) => bonusCardOwner.bonusCards,

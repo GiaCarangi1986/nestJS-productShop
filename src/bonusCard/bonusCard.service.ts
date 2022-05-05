@@ -14,7 +14,9 @@ export class BonusCardService {
   ) {}
 
   async findById(id: number): Promise<BonusCard> {
-    const data = await this.bonusCardRepository.findOne(id);
+    const data = await this.bonusCardRepository.findOne({
+      where: { id, active: true },
+    });
     return data;
   }
 
@@ -30,7 +32,9 @@ export class BonusCardService {
   }
 
   async findAll() {
-    const data = await this.bonusCardRepository.find();
+    const data = await this.bonusCardRepository.find({
+      where: { active: true },
+    });
     const serBonusCards = [];
     for (const bonusCard of data) {
       serBonusCards.push({
@@ -53,7 +57,7 @@ export class BonusCardService {
       if (Number.isNaN(Number(value))) {
         for (const card of bonusCardOwnerns) {
           const dataEl = await this.bonusCardRepository.findOne({
-            where: { bonusCardOwnerFK: card.id },
+            where: { bonusCardOwnerFK: card.id, active: true },
           });
           data.push(dataEl);
         }
@@ -63,6 +67,7 @@ export class BonusCardService {
           .where('CONVERT(VARCHAR(20), BonusCard.id) LIKE :val', {
             val: `%${value}%`,
           })
+          .andWhere('active = :active', { active: true })
           .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
           .getMany();
         data.push(...dataEls);
