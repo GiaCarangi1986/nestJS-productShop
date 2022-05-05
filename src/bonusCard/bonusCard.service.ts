@@ -46,6 +46,25 @@ export class BonusCardService {
     return serBonusCards;
   }
 
+  async findAllOwners() {
+    const data = await this.bonusCardRepository.find({
+      where: { active: true },
+      order: { id: 'DESC' },
+    });
+    const serBonusCards = [];
+    for (const bonusCard of data) {
+      serBonusCards.push({
+        id: bonusCard.id,
+        FIO: bonusCard.bonusCardOwnerFK.fio,
+        phone: bonusCard.bonusCardOwnerFK.phone,
+        email: bonusCard.bonusCardOwnerFK.email,
+        birthDate: bonusCard.bonusCardOwnerFK.birthDate,
+        gender: bonusCard.bonusCardOwnerFK.genderFK.title,
+      });
+    }
+    return serBonusCards;
+  }
+
   async findAllSearch(value: string) {
     if (!value) {
       return [];

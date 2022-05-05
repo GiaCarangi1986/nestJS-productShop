@@ -27,3 +27,15 @@ export class BonusCardController {
     });
   }
 }
+
+@Controller('bonus_card_owner')
+export class BonusCardOwnerController {
+  constructor(private readonly bonusCardService: BonusCardService) {}
+
+  @Get()
+  async getAllOwners() {
+    return this.bonusCardService.findAllOwners().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+  }
+}
