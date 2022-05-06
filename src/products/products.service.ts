@@ -36,6 +36,15 @@ export class ProductService {
     });
     const serProducts = [];
     for (const product of products) {
+      const endTime = product.saleFK?.dateEnd
+        ? new Date(product.saleFK?.dateEnd).getTime()
+        : null;
+      if (endTime && endTime < new Date().getTime()) {
+        product.saleFK = null;
+        await this.productsRepository.update(product.id, {
+          saleFK: product.saleFK,
+        });
+      }
       serProducts.push({
         id: product.id,
         title: product.title,
