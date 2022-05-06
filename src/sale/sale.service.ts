@@ -16,7 +16,7 @@ export class SaleService {
   async findAll() {
     const productData = await this.productService.findForSale();
     const saleData = await this.saleRepository.find({
-      order: { id: 'DESC' },
+      order: { dateStart: 'ASC' },
     });
 
     const serSaleList = [];

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
 
 import { BonusCardOwnerService } from 'src/bonusCardOwner/bonusCardOwner.service';
@@ -47,10 +47,14 @@ export class BonusCardService {
   }
 
   async findAllOwners() {
-    const data = await this.bonusCardRepository.find({
-      where: { active: true },
-      order: { id: 'DESC' },
-    });
+    const data = await this.bonusCardRepository
+      .createQueryBuilder('BonusCard')
+      .where('active = :active', { active: true })
+      .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
+      .leftJoinAndSelect('BonusCardOwner.genderFK', 'Gender')
+      .orderBy('BonusCardOwner.fio', 'ASC')
+      .getMany();
+
     const serBonusCards = [];
     for (const bonusCard of data) {
       serBonusCards.push({
