@@ -43,7 +43,7 @@ export class UserService {
 
   async login({ login, password }: LoginUserDto) {
     const data = await this.userRepository.findOne({
-      where: { phone: login, password },
+      where: { phone: login, password, isDelete: false },
     });
     if (!data) {
       throw {
@@ -65,7 +65,9 @@ export class UserService {
       dateEnd,
     );
 
-    const users = await this.userRepository.find();
+    const users = await this.userRepository.find({
+      where: { isDelete: false },
+    });
     const serUsers = [];
     for (const user of users) {
       serUsers.push({
