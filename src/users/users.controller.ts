@@ -35,3 +35,15 @@ export class BestSellersController {
     });
   }
 }
+
+@Controller('user')
+export class UserCRUDController {
+  constructor(private readonly userService: UserService) {}
+
+  @Get()
+  async getUsers() {
+    return this.userService.findAllUsers().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+}

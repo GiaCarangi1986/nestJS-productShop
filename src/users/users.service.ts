@@ -22,6 +22,25 @@ export class UserService {
     return data;
   }
 
+  async findAllUsers() {
+    const data = await this.userRepository.find({
+      where: { isDelete: false },
+      order: { fio: 'ASC' },
+    });
+    const serUsers = [];
+    for (const user of data) {
+      serUsers.push({
+        id: user.id,
+        FIO: user.fio,
+        phone: user.phone,
+        email: user.email,
+        password: user.password,
+        role: user.roleFK.title,
+      });
+    }
+    return serUsers;
+  }
+
   async login({ login, password }: LoginUserDto) {
     const data = await this.userRepository.findOne({
       where: { phone: login, password },
