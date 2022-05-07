@@ -6,6 +6,8 @@ import {
   Req,
   HttpException,
   HttpStatus,
+  Delete,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -43,6 +45,13 @@ export class UserCRUDController {
   @Get()
   async getUsers() {
     return this.userService.findAllUsers().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    return this.userService.delete(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

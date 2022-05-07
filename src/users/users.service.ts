@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/User';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
+import { USER_ROLE } from 'src/const';
 
 import { CheckService } from 'src/checks/check.service';
 
@@ -20,6 +21,18 @@ export class UserService {
   async findById(id: number): Promise<User> {
     const data = await this.userRepository.findOne(id);
     return data;
+  }
+
+  async delete(id: number) {
+    const data = await this.userRepository.findOne(id);
+    if (data.roleFK.title !== USER_ROLE.admin) {
+      await this.userRepository.update(id, { isDelete: true });
+      return this.findAllUsers();
+    } else {
+      throw {
+        message: 'Нельзя удалить администратора',
+      };
+    }
   }
 
   async findAllUsers() {
