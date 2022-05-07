@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
 } from '@nestjs/common';
 import { BonusCardService } from './bonusCard.service';
@@ -36,6 +38,13 @@ export class BonusCardOwnerController {
   async getAllOwners() {
     return this.bonusCardService.findAllOwners().catch((err) => {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    return this.bonusCardService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 }

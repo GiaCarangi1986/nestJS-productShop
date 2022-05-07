@@ -69,6 +69,11 @@ export class BonusCardService {
     return serBonusCards;
   }
 
+  async delete(id: number) {
+    await this.bonusCardRepository.update(id, { active: false });
+    return this.findAllOwners();
+  }
+
   async findAllSearch(value: string) {
     if (!value) {
       return [];
