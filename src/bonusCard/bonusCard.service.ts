@@ -2,8 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
+import {
+  CreateBonusCardOwnerDto,
+  CreateBonusCardDBDto,
+} from './dto/create-bonusCard.dto';
 
 import { BonusCardOwnerService } from 'src/bonusCardOwner/bonusCardOwner.service';
+
+import { GenderService } from 'src/gender/gender.service';
 
 @Injectable()
 export class BonusCardService {
@@ -11,6 +17,7 @@ export class BonusCardService {
     @InjectRepository(BonusCard)
     private bonusCardRepository: Repository<BonusCard>,
     private readonly bonusCardOwnerService: BonusCardOwnerService,
+    private readonly genderServiceService: GenderService,
   ) {}
 
   async findById(id: number): Promise<BonusCard> {
@@ -77,6 +84,25 @@ export class BonusCardService {
       };
     }
     await this.bonusCardRepository.update(id, { active: false });
+    return this.findAllOwners();
+  }
+
+  async create(data: CreateBonusCardOwnerDto) {
+    const gender = await this.genderServiceService.findById(data.genderFK);
+    const bonusCardOwner = await this.bonusCardOwnerService.create({
+      fio: data.FIO,
+      phone: data.phone,
+      email: data.email,
+      birthDate: data.birthDate,
+      genderFK: gender,
+    });
+
+    const bonusCard: CreateBonusCardDBDto = {
+      bonusCount: 50,
+      active: true,
+      bonusCardOwnerFK: bonusCardOwner,
+    };
+    await this.bonusCardRepository.save(bonusCard);
     return this.findAllOwners();
   }
 

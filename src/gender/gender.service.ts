@@ -21,4 +21,14 @@ export class GenderService {
     }
     return genderSer;
   }
+
+  async findById(id: number): Promise<Gender> {
+    const gender = await this.genderRepository.findOne(id);
+    if (!gender) {
+      throw {
+        message: `Нет данных о поле с id = ${id}`,
+      };
+    }
+    return gender;
+  }
 }

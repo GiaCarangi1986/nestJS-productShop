@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { BonusCardService } from './bonusCard.service';
 import { GetSearchListBonusCardDto } from './dto/getAllSearch-bonusCard.dto';
+import { CreateBonusCardOwnerDto } from './dto/create-bonusCard.dto';
 
 @Controller('bonus_card')
 export class BonusCardController {
@@ -44,6 +45,13 @@ export class BonusCardOwnerController {
   @Delete(':id')
   async remove(@Param('id') id: number) {
     return this.bonusCardService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Post()
+  async create(@Body() bonusCardData: CreateBonusCardOwnerDto) {
+    return this.bonusCardService.create(bonusCardData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

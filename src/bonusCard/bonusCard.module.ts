@@ -7,9 +7,14 @@ import {
   BonusCardOwnerController,
 } from './bonusCard.controller';
 import { BonusCardOwnerModule } from 'src/bonusCardOwner/bonusCardOwner.module';
+import { GenderModule } from 'src/gender/gender.module';
 
 @Module({
-  imports: [BonusCardOwnerModule, TypeOrmModule.forFeature([BonusCard])],
+  imports: [
+    BonusCardOwnerModule,
+    TypeOrmModule.forFeature([BonusCard]),
+    GenderModule,
+  ],
   providers: [BonusCardService],
   controllers: [BonusCardController, BonusCardOwnerController],
   exports: [BonusCardService],

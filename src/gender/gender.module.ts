@@ -8,5 +8,6 @@ import { GenderService } from './gender.service';
   imports: [TypeOrmModule.forFeature([Gender])],
   providers: [GenderService],
   controllers: [GenderController],
+  exports: [GenderService],
 })
 export class GenderModule {}
