@@ -17,6 +17,10 @@ export class BonusCardOwnerService {
     return bonusCard;
   }
 
+  async findByLogin(phone: string, email: string | null) {
+    return this.bonusCardOwnerRepository.findOne({ phone, email });
+  }
+
   async findAllSearch(value: string) {
     const data = await this.bonusCardOwnerRepository
       .createQueryBuilder('BonusCardOwner')

@@ -87,7 +87,23 @@ export class BonusCardService {
     return this.findAllOwners();
   }
 
+  async checkData(phone: string, email: string | null) {
+    const data = await this.bonusCardOwnerService.findByLogin(phone, email);
+    if (data) {
+      const bonusCardActive = await this.bonusCardRepository.findOne({
+        where: { bonusCardOwnerFK: data, active: true },
+      });
+      if (bonusCardActive) {
+        throw {
+          message: 'Пользователь с такими телефоном и паролем уже существует',
+        };
+      }
+    }
+  }
+
   async create(data: CreateBonusCardOwnerDto) {
+    await this.checkData(data.phone, data.email);
+
     const gender = await this.genderServiceService.findById(data.genderFK);
     const bonusCardOwner = await this.bonusCardOwnerService.create({
       fio: data.FIO,
