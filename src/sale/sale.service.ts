@@ -15,6 +15,11 @@ export class SaleService {
 
   async delete(id: number) {
     const sale = await this.saleRepository.findOne(id);
+    if (!sale) {
+      throw {
+        message: `Нет данных об акции с id = ${id}`,
+      };
+    }
     const products = await this.productService.getAllWithSale(sale);
 
     for (const product of products) {

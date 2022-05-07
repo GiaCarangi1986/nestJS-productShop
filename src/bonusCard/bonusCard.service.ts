@@ -70,6 +70,12 @@ export class BonusCardService {
   }
 
   async delete(id: number) {
+    const data = await this.bonusCardRepository.findOne(id);
+    if (!data) {
+      throw {
+        message: `Нет данных о владельце карты с id = ${id}`,
+      };
+    }
     await this.bonusCardRepository.update(id, { active: false });
     return this.findAllOwners();
   }

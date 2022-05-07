@@ -25,6 +25,11 @@ export class UserService {
 
   async delete(id: number) {
     const data = await this.userRepository.findOne(id);
+    if (!data) {
+      throw {
+        message: `Нет данных о пользователе с id = ${id}`,
+      };
+    }
     if (data.roleFK.title !== USER_ROLE.admin) {
       await this.userRepository.update(id, { isDelete: true });
       return this.findAllUsers();
