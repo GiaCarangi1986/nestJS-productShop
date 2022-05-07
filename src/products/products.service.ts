@@ -8,6 +8,8 @@ import { CheckService } from 'src/checks/check.service';
 
 import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 
+import { Sale } from 'src/entities/Sale';
+
 @Injectable()
 export class ProductService {
   constructor(
@@ -20,6 +22,14 @@ export class ProductService {
 
   async getById(id: number): Promise<Product> {
     return this.productsRepository.findOne(id);
+  }
+
+  async getAllWithSale(sale: Sale): Promise<Product[]> {
+    return this.productsRepository.find({ where: { saleFK: sale } });
+  }
+
+  async updateSale(id: number, value: null | Sale) {
+    this.productsRepository.update(id, { saleFK: value });
   }
 
   async findForSale() {

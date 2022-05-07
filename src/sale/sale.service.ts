@@ -13,6 +13,18 @@ export class SaleService {
     private readonly productService: ProductService,
   ) {}
 
+  async delete(id: number) {
+    const sale = await this.saleRepository.findOne(id);
+    const products = await this.productService.getAllWithSale(sale);
+
+    for (const product of products) {
+      await this.productService.updateSale(product.id, null);
+    }
+
+    await this.saleRepository.delete(id);
+    return this.findAll();
+  }
+
   async findAll() {
     const productData = await this.productService.findForSale();
     const saleData = await this.saleRepository.find({
