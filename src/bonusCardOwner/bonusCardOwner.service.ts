@@ -17,6 +17,11 @@ export class BonusCardOwnerService {
     return bonusCard;
   }
 
+  async update(id: number, data: CreateBonusCardOwnerDBDto) {
+    const bonusCard = await this.bonusCardOwnerRepository.update(id, data);
+    return bonusCard;
+  }
+
   async findByLogin(phone: string, email: string | null) {
     return this.bonusCardOwnerRepository.findOne({ phone, email });
   }

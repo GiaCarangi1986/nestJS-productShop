@@ -42,11 +42,12 @@ export class BonusCardService {
     return {
       birthDate: data.bonusCardOwnerFK.birthDate,
       email: data.bonusCardOwnerFK.email,
-      firstName: fio[0],
+      firstName: fio[1],
       gender,
       patronymic: fio[2],
       phone: data.bonusCardOwnerFK.phone,
-      secondName: fio[1],
+      secondName: fio[0],
+      id: data.id,
     };
   }
 
@@ -142,6 +143,21 @@ export class BonusCardService {
       bonusCardOwnerFK: bonusCardOwner,
     };
     await this.bonusCardRepository.save(bonusCard);
+    return this.findAllOwners();
+  }
+
+  async updateAllData(id: number, data: CreateBonusCardOwnerDto) {
+    await this.checkData(data.phone, data.email);
+
+    const gender = await this.genderServiceService.findById(data.genderFK);
+    await this.bonusCardOwnerService.update(id, {
+      fio: data.FIO,
+      phone: data.phone,
+      email: data.email,
+      birthDate: data.birthDate,
+      genderFK: gender,
+    });
+
     return this.findAllOwners();
   }
 

@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { BonusCardService } from './bonusCard.service';
 import { GetSearchListBonusCardDto } from './dto/getAllSearch-bonusCard.dto';
@@ -62,5 +63,17 @@ export class BonusCardOwnerController {
     return await this.bonusCardService.getBonusCardData(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
+  }
+
+  @Put(':id') // запрос на редактирование данных
+  async editBonusCardData(
+    @Param('id') id: number,
+    @Body() bonusCardData: CreateBonusCardOwnerDto,
+  ) {
+    return await this.bonusCardService
+      .updateAllData(+id, bonusCardData)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
   }
 }
