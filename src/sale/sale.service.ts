@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sale } from 'src/entities/Sale';
+import { CreateSaleDto, CreateSaleDBDto } from './dto/create-sale.dto';
 
 import { ProductService } from 'src/products/products.service';
 
@@ -27,6 +28,21 @@ export class SaleService {
     }
 
     await this.saleRepository.delete(id);
+    return this.findAll();
+  }
+
+  async create(saleData: CreateSaleDto) {
+    const saleCreate: CreateSaleDBDto = {
+      dateStart: saleData.dateStart,
+      dateEnd: saleData.dateEnd,
+      discountPercent: saleData.discountPercent,
+    };
+    const sale = await this.saleRepository.save(saleCreate);
+
+    for (const productId of saleData.productsID) {
+      await this.productService.updateSale(productId, sale);
+    }
+
     return this.findAll();
   }
 
