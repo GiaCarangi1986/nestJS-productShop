@@ -22,6 +22,14 @@ export class GenderService {
     return genderSer;
   }
 
+  async getForSelectById(id: number) {
+    const gender = await this.genderRepository.findOne(id);
+    return {
+      id: gender.id,
+      title: gender.title,
+    };
+  }
+
   async findById(id: number): Promise<Gender> {
     const gender = await this.genderRepository.findOne(id);
     if (!gender) {

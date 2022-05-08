@@ -27,6 +27,29 @@ export class BonusCardService {
     return data;
   }
 
+  async getBonusCardData(id: number) {
+    const data = await this.findById(id);
+    if (!data) {
+      throw {
+        message: `Нет данных о карте с id = ${id}`,
+      };
+    }
+    const gender = await this.genderServiceService.getForSelectById(
+      data.bonusCardOwnerFK.genderFK.id,
+    );
+    const fio = data.bonusCardOwnerFK.fio.split(' ');
+
+    return {
+      birthDate: data.bonusCardOwnerFK.birthDate,
+      email: data.bonusCardOwnerFK.email,
+      firstName: fio[0],
+      gender,
+      patronymic: fio[2],
+      phone: data.bonusCardOwnerFK.phone,
+      secondName: fio[1],
+    };
+  }
+
   async update(id: number, newBonus: number, usedBonus: number) {
     const card: BonusCard = await this.findById(id);
     const newSum =

@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { BonusCardService } from './bonusCard.service';
@@ -52,6 +53,13 @@ export class BonusCardOwnerController {
   @Post()
   async create(@Body() bonusCardData: CreateBonusCardOwnerDto) {
     return this.bonusCardService.create(bonusCardData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Patch(':id') // запрос получение инфы для редактирования карты
+  async getBonusCardData(@Param('id') id: number) {
+    return await this.bonusCardService.getBonusCardData(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

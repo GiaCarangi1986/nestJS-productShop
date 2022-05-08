@@ -57,7 +57,7 @@ export class CheckController {
 
   @Patch(':id') // запрос на историю изменений
   async getHistory(@Param('id') id: number) {
-    return await this.checkService.getHistory(id).catch((err) => {
+    return await this.checkService.getHistory(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
