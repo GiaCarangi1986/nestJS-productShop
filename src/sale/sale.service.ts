@@ -61,11 +61,16 @@ export class SaleService {
   }
 
   async createCheck(saleData: CreateSaleCheckDto) {
+    const sale = await this.saleRepository.findOne(saleData.id);
     const checkProduct = [];
     const productList = await this.productService.getAllTitles();
     for (const product of productList) {
       for (const productId of saleData.productsID) {
-        if (productId === product.id && product.saleFK) {
+        if (
+          productId === product.id &&
+          product.saleFK &&
+          product.saleFK.id !== sale.id
+        ) {
           checkProduct.push({
             id: productId,
             title: product.title,

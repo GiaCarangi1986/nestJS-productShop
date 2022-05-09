@@ -12,5 +12,6 @@ export class CreateSaleDto {
 }
 
 export class CreateSaleCheckDto {
+  readonly id: number;
   readonly productsID: number[];
 }

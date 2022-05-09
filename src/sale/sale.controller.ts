@@ -39,17 +39,14 @@ export class SaleController {
   }
 
   @Patch(':id') // запрос получение инфы для редактирования акции
-  async getBonusCardData(@Param('id') id: number) {
+  async getSaleData(@Param('id') id: number) {
     return await this.saleService.getSaleData(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 
   @Put(':id') // запрос на редактирование данных
-  async editBonusCardData(
-    @Param('id') id: number,
-    @Body() saleData: CreateSaleDto,
-  ) {
+  async editSaleData(@Param('id') id: number, @Body() saleData: CreateSaleDto) {
     return await this.saleService.update(+id, saleData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
