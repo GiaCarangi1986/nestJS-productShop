@@ -49,7 +49,7 @@ export class SaleService {
   async findAll() {
     const productData = await this.productService.findForSale();
     const saleData = await this.saleRepository.find({
-      order: { dateStart: 'ASC' },
+      order: { dateStart: 'ASC', dateEnd: 'ASC' },
     });
 
     const serSaleList = [];
