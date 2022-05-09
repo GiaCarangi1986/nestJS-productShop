@@ -12,6 +12,7 @@ import {
 import { UserService } from './users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
+import { RoleDto } from './dto/create-user.dto';
 
 @Controller('login')
 export class UserController {
@@ -52,6 +53,13 @@ export class UserCRUDController {
   @Delete(':id')
   async remove(@Param('id') id: number) {
     return this.userService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Post()
+  async create(@Body() userData: RoleDto) {
+    return this.userService.create(userData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

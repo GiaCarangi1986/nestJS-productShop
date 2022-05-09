@@ -5,8 +5,10 @@ import { User } from '../entities/User';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
 import { USER_ROLE } from 'src/const';
+import { RoleDto, RoleDBDto } from './dto/create-user.dto';
 
 import { CheckService } from 'src/checks/check.service';
+import { RoleService } from 'src/role/role.service';
 
 @Injectable()
 export class UserService {
@@ -16,6 +18,8 @@ export class UserService {
 
     @Inject(forwardRef(() => CheckService))
     private checkService: CheckService,
+
+    private readonly roleService: RoleService,
   ) {}
 
   async findById(id: number): Promise<User> {
@@ -38,6 +42,36 @@ export class UserService {
         message: 'Нельзя удалить администратора',
       };
     }
+  }
+
+  async create(user: RoleDto) {
+    const roleFK = await this.roleService.getById(user.roleFK);
+    const adminUser = await this.userRepository.findOne({ where: { roleFK } });
+    if (adminUser.roleFK.title === USER_ROLE.admin) {
+      throw {
+        message: 'Админ уже создан',
+      };
+    }
+    const userExist = await this.userRepository.findOne({
+      where: { phone: user.phone, password: user.password },
+    });
+    if (userExist) {
+      // позже это в отдельную ф-цию вынести проверки
+      throw {
+        message: 'Пользователь с такими телефоном и паролем уже существуют',
+      };
+    }
+    const userData: RoleDBDto = {
+      fio: user.FIO,
+      phone: user.phone,
+      email: user.email,
+      password: user.password,
+      roleFK,
+      isDelete: false,
+    };
+    await this.userRepository.save(userData);
+
+    return this.findAllUsers();
   }
 
   async findAllUsers() {

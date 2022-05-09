@@ -17,7 +17,7 @@ export class BonusCardService {
     @InjectRepository(BonusCard)
     private bonusCardRepository: Repository<BonusCard>,
     private readonly bonusCardOwnerService: BonusCardOwnerService,
-    private readonly genderServiceService: GenderService,
+    private readonly genderService: GenderService,
   ) {}
 
   async findById(id: number): Promise<BonusCard> {
@@ -34,7 +34,7 @@ export class BonusCardService {
         message: `Нет данных о карте с id = ${id}`,
       };
     }
-    const gender = await this.genderServiceService.getForSelectById(
+    const gender = await this.genderService.getForSelectById(
       data.bonusCardOwnerFK.genderFK.id,
     );
     const fio = data.bonusCardOwnerFK.fio.split(' ');
@@ -128,7 +128,7 @@ export class BonusCardService {
   async create(data: CreateBonusCardOwnerDto) {
     await this.checkData(data.phone, data.email);
 
-    const gender = await this.genderServiceService.findById(data.genderFK);
+    const gender = await this.genderService.findById(data.genderFK);
     const bonusCardOwner = await this.bonusCardOwnerService.create({
       fio: data.FIO,
       phone: data.phone,
@@ -149,7 +149,7 @@ export class BonusCardService {
   async updateAllData(id: number, data: CreateBonusCardOwnerDto) {
     await this.checkData(data.phone, data.email);
 
-    const gender = await this.genderServiceService.findById(data.genderFK);
+    const gender = await this.genderService.findById(data.genderFK);
     await this.bonusCardOwnerService.update(id, {
       fio: data.FIO,
       phone: data.phone,

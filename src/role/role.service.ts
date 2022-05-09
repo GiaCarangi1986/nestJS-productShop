@@ -13,4 +13,8 @@ export class RoleService {
   async getAll() {
     return this.roleRepository.find();
   }
+
+  async getById(id: number) {
+    return this.roleRepository.findOne(id);
+  }
 }
