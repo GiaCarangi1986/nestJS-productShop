@@ -29,7 +29,7 @@ export class ProductService {
   }
 
   async updateSale(id: number, value: null | Sale) {
-    this.productsRepository.update(id, { saleFK: value });
+    await this.productsRepository.update(id, { saleFK: value });
   }
 
   async findForSale() {
