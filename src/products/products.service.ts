@@ -28,6 +28,18 @@ export class ProductService {
     return this.productsRepository.find({ order: { title: 'ASC' } });
   }
 
+  async getAllSales() {
+    const products = await this.productsRepository.find();
+    const serProducts = [];
+    for (const product of products) {
+      serProducts.push({
+        id: product.id,
+        saleFK: product.saleFK,
+      });
+    }
+    return serProducts;
+  }
+
   async getAllWithSale(sale: Sale): Promise<Product[]> {
     return this.productsRepository.find({ where: { saleFK: sale } });
   }

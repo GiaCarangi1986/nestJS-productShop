@@ -93,6 +93,31 @@ export class SaleService {
     return this.findAll();
   }
 
+  async update(id: number, saleData: CreateSaleDto) {
+    const saleUpdate: CreateSaleDBDto = {
+      dateStart: saleData.dateStart,
+      dateEnd: saleData.dateEnd,
+      discountPercent: saleData.discountPercent,
+    };
+    await this.saleRepository.update(id, saleUpdate);
+    const sale = await this.saleRepository.findOne(id);
+
+    const products = await this.productService.getAllSales();
+
+    for (const product of products) {
+      if (product.saleFK?.id === sale.id) {
+        await this.productService.updateSale(product.id, null);
+      }
+      for (const productId of saleData.productsID) {
+        if (productId === product.id) {
+          await this.productService.updateSale(productId, sale);
+        }
+      }
+    }
+
+    return this.findAll();
+  }
+
   async findAll() {
     const productData = await this.productService.findForSale();
     const saleData = await this.saleRepository.find({
