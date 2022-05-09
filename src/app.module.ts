@@ -13,6 +13,7 @@ import { BonusCardOwnerModule } from './bonusCardOwner/bonusCardOwner.module';
 import { WriteOffModule } from './writeOff/writeOff.module';
 import { SaleModule } from './sale/sale.module';
 import { GenderModule } from './gender/gender.module';
+import { RoleModule } from './role/role.module';
 
 import { Check } from './entities/Check';
 import { BonusCard } from './entities/BonusCard';
@@ -69,6 +70,7 @@ import { Manufacturer } from './entities/Manufacturer';
     WriteOffModule,
     SaleModule,
     GenderModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
