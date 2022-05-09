@@ -10,3 +10,7 @@ export class CreateSaleDto {
   readonly discountPercent: number;
   readonly productsID: number[];
 }
+
+export class CreateSaleCheckDto {
+  readonly productsID: number[];
+}

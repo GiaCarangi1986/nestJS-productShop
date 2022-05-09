@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sale } from 'src/entities/Sale';
-import { CreateSaleDto, CreateSaleDBDto } from './dto/create-sale.dto';
+import {
+  CreateSaleDto,
+  CreateSaleDBDto,
+  CreateSaleCheckDto,
+} from './dto/create-sale.dto';
 
 import { ProductService } from 'src/products/products.service';
 
@@ -31,6 +35,24 @@ export class SaleService {
     return this.findAll();
   }
 
+  async createCheck(saleData: CreateSaleCheckDto) {
+    const checkProduct = [];
+    const productList = await this.productService.getAllTitles();
+    for (const product of productList) {
+      for (const productId of saleData.productsID) {
+        if (productId === product.id && product.saleFK) {
+          checkProduct.push({
+            id: productId,
+            title: product.title,
+          });
+          break;
+        }
+      }
+    }
+
+    return checkProduct;
+  }
+
   async create(saleData: CreateSaleDto) {
     const saleCreate: CreateSaleDBDto = {
       dateStart: saleData.dateStart,
@@ -49,7 +71,7 @@ export class SaleService {
   async findAll() {
     const productData = await this.productService.findForSale();
     const saleData = await this.saleRepository.find({
-      order: { dateStart: 'ASC', dateEnd: 'ASC' },
+      order: { dateStart: 'ASC', dateEnd: 'ASC', id: 'ASC' },
     });
 
     const serSaleList = [];

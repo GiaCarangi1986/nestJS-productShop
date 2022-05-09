@@ -24,6 +24,10 @@ export class ProductService {
     return this.productsRepository.findOne(id);
   }
 
+  async getAllTitles(): Promise<Product[]> {
+    return this.productsRepository.find({ order: { title: 'ASC' } });
+  }
+
   async getAllWithSale(sale: Sale): Promise<Product[]> {
     return this.productsRepository.find({ where: { saleFK: sale } });
   }

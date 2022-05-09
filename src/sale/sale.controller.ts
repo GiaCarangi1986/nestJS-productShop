@@ -9,7 +9,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { SaleService } from './sale.service';
-import { CreateSaleDto } from './dto/create-sale.dto';
+import { CreateSaleDto, CreateSaleCheckDto } from './dto/create-sale.dto';
 
 @Controller('sale')
 export class SaleController {
@@ -32,6 +32,18 @@ export class SaleController {
   @Post()
   async create(@Body() saleData: CreateSaleDto) {
     return this.saleService.create(saleData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+}
+
+@Controller('sale_check')
+export class SaleCheckController {
+  constructor(private readonly saleCheckService: SaleService) {}
+
+  @Post()
+  async create(@Body() productData: CreateSaleCheckDto) {
+    return this.saleCheckService.createCheck(productData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
