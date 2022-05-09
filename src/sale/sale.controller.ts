@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Body,
+  Patch,
 } from '@nestjs/common';
 import { SaleService } from './sale.service';
 import { CreateSaleDto, CreateSaleCheckDto } from './dto/create-sale.dto';
@@ -32,6 +33,13 @@ export class SaleController {
   @Post()
   async create(@Body() saleData: CreateSaleDto) {
     return this.saleService.create(saleData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Patch(':id') // запрос получение инфы для редактирования акции
+  async getBonusCardData(@Param('id') id: number) {
+    return await this.saleService.getSaleData(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

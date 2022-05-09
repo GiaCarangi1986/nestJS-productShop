@@ -18,6 +18,31 @@ export class SaleService {
     private readonly productService: ProductService,
   ) {}
 
+  async getSaleData(id: number) {
+    const sale = await this.saleRepository.findOne(id);
+    if (!sale) {
+      throw {
+        message: `Нет данных об акции с id = ${id}`,
+      };
+    }
+    const productList = await this.productService.getAllWithSale(sale);
+    const serProductList = [];
+    for (const item of productList) {
+      serProductList.push({
+        id: item.id,
+        title: item.title,
+      });
+    }
+
+    return {
+      id,
+      dateStart: sale.dateStart,
+      dateEnd: sale.dateEnd,
+      discountPercent: sale.discountPercent,
+      productList: serProductList,
+    };
+  }
+
   async delete(id: number) {
     const sale = await this.saleRepository.findOne(id);
     if (!sale) {
