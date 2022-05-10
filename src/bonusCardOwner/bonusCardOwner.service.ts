@@ -17,6 +17,11 @@ export class BonusCardOwnerService {
     return bonusCard;
   }
 
+  async findById(id: number) {
+    const bonusCard = await this.bonusCardOwnerRepository.findOne(id);
+    return bonusCard;
+  }
+
   async update(id: number, data: CreateBonusCardOwnerDBDto) {
     const bonusCard = await this.bonusCardOwnerRepository.update(id, data);
     return bonusCard;
@@ -35,5 +40,9 @@ export class BonusCardOwnerService {
       .getMany();
 
     return data;
+  }
+
+  async findAll() {
+    return this.bonusCardOwnerRepository.find();
   }
 }

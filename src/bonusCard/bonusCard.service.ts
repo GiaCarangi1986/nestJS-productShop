@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
 import {
   CreateBonusCardOwnerDto,
@@ -83,9 +83,10 @@ export class BonusCardService {
       .where('active = :active', { active: true })
       .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
       .leftJoinAndSelect('BonusCardOwner.genderFK', 'Gender')
-      .orderBy('BonusCardOwner.fio', 'ASC')
+      // .orderBy('BonusCardOwner.fio', 'ASC')
       .getMany();
-
+    const a = await this.bonusCardOwnerService.findAll();
+    const b = await this.bonusCardRepository.find();
     const serBonusCards = [];
     for (const bonusCard of data) {
       serBonusCards.push({
@@ -111,11 +112,11 @@ export class BonusCardService {
     return this.findAllOwners();
   }
 
-  async checkData(phone: string, email: string | null) {
+  async checkData(phone: string, email: string | null, id: number | null) {
     const data = await this.bonusCardOwnerService.findByLogin(phone, email);
     if (data) {
       const bonusCardActive = await this.bonusCardRepository.findOne({
-        where: { bonusCardOwnerFK: data, active: true },
+        where: { bonusCardOwnerFK: data, active: true, id: Not(id) },
       });
       if (bonusCardActive) {
         throw {
@@ -126,7 +127,7 @@ export class BonusCardService {
   }
 
   async create(data: CreateBonusCardOwnerDto) {
-    await this.checkData(data.phone, data.email);
+    await this.checkData(data.phone, data.email, null);
 
     const gender = await this.genderService.findById(data.genderFK);
     const bonusCardOwner = await this.bonusCardOwnerService.create({
@@ -147,10 +148,17 @@ export class BonusCardService {
   }
 
   async updateAllData(id: number, data: CreateBonusCardOwnerDto) {
-    await this.checkData(data.phone, data.email);
+    // id - id карты, а не чела!
+    const user = await this.bonusCardRepository
+      .createQueryBuilder('BonusCard')
+      .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
+      .where('BonusCardOwner.id = :id', { id })
+      .getOne();
+    // const user = await this.bonusCardOwnerService.findById(id); // тут надо не из bonusCardOwnerService искать, а из bonusCard
+    await this.checkData(data.phone, data.email, user.id);
 
     const gender = await this.genderService.findById(data.genderFK);
-    await this.bonusCardOwnerService.update(id, {
+    await this.bonusCardOwnerService.update(user.id, {
       fio: data.FIO,
       phone: data.phone,
       email: data.email,

@@ -27,6 +27,25 @@ export class UserService {
     return data;
   }
 
+  async getUserData(id: number) {
+    const user = await this.userRepository.findOne(id);
+    const fio = user.fio.split(' ');
+
+    return {
+      id: user.id,
+      secondName: fio[0],
+      firstName: fio[1],
+      patronymic: fio[2],
+      password: user.password,
+      phone: user.phone,
+      email: user.email,
+      role: {
+        id: user.roleFK.id,
+        title: user.roleFK.title,
+      },
+    };
+  }
+
   async delete(id: number) {
     const data = await this.userRepository.findOne(id);
     if (!data) {

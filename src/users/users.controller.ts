@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Delete,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -60,6 +61,13 @@ export class UserCRUDController {
   @Post()
   async create(@Body() userData: RoleDto) {
     return this.userService.create(userData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Patch(':id') // запрос получение инфы для редактирования пользовтаеля системы
+  async getUserData(@Param('id') id: number) {
+    return await this.userService.getUserData(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
