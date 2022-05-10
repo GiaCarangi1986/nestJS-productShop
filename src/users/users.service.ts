@@ -71,12 +71,21 @@ export class UserService {
         message: 'Админ уже создан',
       };
     }
-    const userExist = await this.userRepository.findOne({
-      where: { id: Not(id), phone: user.phone, password: user.password },
-    });
+    const where = id
+      ? [
+          { id: Not(id), phone: user.phone, isDelete: false },
+          { id: Not(id), password: user.password, isDelete: false },
+        ]
+      : [
+          { phone: user.phone, isDelete: false },
+          { password: user.password, isDelete: false },
+        ];
+
+    const userExist = await this.userRepository.findOne({ where });
+
     if (userExist) {
       throw {
-        message: 'Пользователь с такими телефоном и паролем уже существуют',
+        message: 'Пользователь с такими телефоном и/или паролем уже существуют',
       };
     }
     const userData: UserDBDto = {

@@ -27,8 +27,19 @@ export class BonusCardOwnerService {
     return bonusCard;
   }
 
-  async findByLogin(phone: string, email: string | null, id: number) {
-    return this.bonusCardOwnerRepository.findOne({ phone, email, id: Not(id) });
+  async findByLogin(phone: string, email: string | null, id: number | null) {
+    let where;
+    if (id) {
+      where = email
+        ? [
+            { id: Not(id), phone },
+            { id: Not(id), email },
+          ]
+        : [{ id: Not(id), phone }, { id: Not(id) }];
+    } else {
+      where = email ? [{ phone }, { email }] : [{ phone }];
+    }
+    return this.bonusCardOwnerRepository.findOne({ where });
   }
 
   async findAllSearch(value: string) {

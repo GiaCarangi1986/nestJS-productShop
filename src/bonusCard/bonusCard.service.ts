@@ -119,7 +119,8 @@ export class BonusCardService {
       });
       if (bonusCardActive) {
         throw {
-          message: 'Пользователь с такими телефоном и паролем уже существует',
+          message:
+            'Пользователь с такими телефоном и/или паролем уже существует',
         };
       }
     }
