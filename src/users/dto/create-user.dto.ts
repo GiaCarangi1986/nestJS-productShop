@@ -1,6 +1,6 @@
 import { Role } from 'src/entities/Role';
 
-export class RoleDto {
+export class UserDto {
   readonly FIO: string;
   readonly phone: string;
   readonly email: string | null;
@@ -8,7 +8,7 @@ export class RoleDto {
   readonly roleFK: number;
 }
 
-export class RoleDBDto {
+export class UserDBDto {
   readonly fio: string;
   readonly phone: string;
   readonly email: string | null;

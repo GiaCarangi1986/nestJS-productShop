@@ -1,11 +1,11 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from '../entities/User';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
 import { USER_ROLE } from 'src/const';
-import { RoleDto, RoleDBDto } from './dto/create-user.dto';
+import { UserDto, UserDBDto } from './dto/create-user.dto';
 
 import { CheckService } from 'src/checks/check.service';
 import { RoleService } from 'src/role/role.service';
@@ -63,7 +63,7 @@ export class UserService {
     }
   }
 
-  async create(user: RoleDto) {
+  async setUserData(user: UserDto, id: number | null) {
     const roleFK = await this.roleService.getById(user.roleFK);
     const adminUser = await this.userRepository.findOne({ where: { roleFK } });
     if (adminUser.roleFK.title === USER_ROLE.admin) {
@@ -72,15 +72,14 @@ export class UserService {
       };
     }
     const userExist = await this.userRepository.findOne({
-      where: { phone: user.phone, password: user.password },
+      where: { id: Not(id), phone: user.phone, password: user.password },
     });
     if (userExist) {
-      // позже это в отдельную ф-цию вынести проверки
       throw {
         message: 'Пользователь с такими телефоном и паролем уже существуют',
       };
     }
-    const userData: RoleDBDto = {
+    const userData: UserDBDto = {
       fio: user.FIO,
       phone: user.phone,
       email: user.email,
@@ -88,7 +87,19 @@ export class UserService {
       roleFK,
       isDelete: false,
     };
+    return userData;
+  }
+
+  async create(user: UserDto) {
+    const userData = await this.setUserData(user, null);
     await this.userRepository.save(userData);
+
+    return this.findAllUsers();
+  }
+
+  async update(id: number, user: UserDto) {
+    const userData = await this.setUserData(user, id);
+    await this.userRepository.update(id, userData);
 
     return this.findAllUsers();
   }

@@ -9,11 +9,12 @@ import {
   Delete,
   Param,
   Patch,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
-import { RoleDto } from './dto/create-user.dto';
+import { UserDto } from './dto/create-user.dto';
 
 @Controller('login')
 export class UserController {
@@ -59,7 +60,7 @@ export class UserCRUDController {
   }
 
   @Post()
-  async create(@Body() userData: RoleDto) {
+  async create(@Body() userData: UserDto) {
     return this.userService.create(userData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
@@ -68,6 +69,13 @@ export class UserCRUDController {
   @Patch(':id') // запрос получение инфы для редактирования пользовтаеля системы
   async getUserData(@Param('id') id: number) {
     return await this.userService.getUserData(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Put(':id') // запрос на редактирование данных
+  async editUserData(@Param('id') id: number, @Body() userData: UserDto) {
+    return await this.userService.update(+id, userData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
