@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
 import {
   CreateBonusCardOwnerDto,
@@ -83,10 +83,9 @@ export class BonusCardService {
       .where('active = :active', { active: true })
       .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
       .leftJoinAndSelect('BonusCardOwner.genderFK', 'Gender')
-      // .orderBy('BonusCardOwner.fio', 'ASC')
+      .orderBy('BonusCardOwner.fio', 'ASC')
       .getMany();
-    const a = await this.bonusCardOwnerService.findAll();
-    const b = await this.bonusCardRepository.find();
+
     const serBonusCards = [];
     for (const bonusCard of data) {
       serBonusCards.push({
@@ -113,10 +112,10 @@ export class BonusCardService {
   }
 
   async checkData(phone: string, email: string | null, id: number | null) {
-    const data = await this.bonusCardOwnerService.findByLogin(phone, email);
+    const data = await this.bonusCardOwnerService.findByLogin(phone, email, id);
     if (data) {
       const bonusCardActive = await this.bonusCardRepository.findOne({
-        where: { bonusCardOwnerFK: data, active: true, id: Not(id) },
+        where: { bonusCardOwnerFK: data, active: true },
       });
       if (bonusCardActive) {
         throw {
@@ -149,16 +148,11 @@ export class BonusCardService {
 
   async updateAllData(id: number, data: CreateBonusCardOwnerDto) {
     // id - id карты, а не чела!
-    const user = await this.bonusCardRepository
-      .createQueryBuilder('BonusCard')
-      .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
-      .where('BonusCardOwner.id = :id', { id })
-      .getOne();
-    // const user = await this.bonusCardOwnerService.findById(id); // тут надо не из bonusCardOwnerService искать, а из bonusCard
-    await this.checkData(data.phone, data.email, user.id);
+    const user = await this.bonusCardRepository.findOne(id);
+    await this.checkData(data.phone, data.email, user.bonusCardOwnerFK.id);
 
     const gender = await this.genderService.findById(data.genderFK);
-    await this.bonusCardOwnerService.update(user.id, {
+    await this.bonusCardOwnerService.update(user.bonusCardOwnerFK.id, {
       fio: data.FIO,
       phone: data.phone,
       email: data.email,

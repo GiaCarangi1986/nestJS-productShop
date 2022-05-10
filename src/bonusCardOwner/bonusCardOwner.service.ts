@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { BonusCardOwner } from 'src/entities/BonusCardOwner';
 
 import { CreateBonusCardOwnerDBDto } from 'src/bonusCard/dto/create-bonusCard.dto';
@@ -27,8 +27,8 @@ export class BonusCardOwnerService {
     return bonusCard;
   }
 
-  async findByLogin(phone: string, email: string | null) {
-    return this.bonusCardOwnerRepository.findOne({ phone, email });
+  async findByLogin(phone: string, email: string | null, id: number) {
+    return this.bonusCardOwnerRepository.findOne({ phone, email, id: Not(id) });
   }
 
   async findAllSearch(value: string) {
@@ -40,9 +40,5 @@ export class BonusCardOwnerService {
       .getMany();
 
     return data;
-  }
-
-  async findAll() {
-    return this.bonusCardOwnerRepository.find();
   }
 }
