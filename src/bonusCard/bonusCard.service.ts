@@ -176,7 +176,9 @@ export class BonusCardService {
           const dataEl = await this.bonusCardRepository.findOne({
             where: { bonusCardOwnerFK: card.id, active: true },
           });
-          data.push(dataEl);
+          if (dataEl) {
+            data.push(dataEl);
+          }
         }
       } else {
         const dataEls = await this.bonusCardRepository
@@ -187,7 +189,9 @@ export class BonusCardService {
           .andWhere('active = :active', { active: true })
           .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
           .getMany();
-        data.push(...dataEls);
+        if (dataEls) {
+          data.push(...dataEls);
+        }
       }
 
       const serBonusCards = [];

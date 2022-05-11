@@ -27,7 +27,7 @@ export class Product {
   @Column('decimal', { name: 'priceNow', precision: 10, scale: 2 })
   priceNow: number;
 
-  @Column('int', { name: 'count' })
+  @Column('decimal', { name: 'count', precision: 10, scale: 2 })
   count: number;
 
   @Column('int', { name: 'expirationDate', nullable: true })

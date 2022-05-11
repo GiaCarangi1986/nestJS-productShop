@@ -15,7 +15,7 @@ export class DeliveryLine {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('int', { name: 'productCount' })
+  @Column('decimal', { name: 'productCount', precision: 10, scale: 2 })
   productCount: number;
 
   @Column('decimal', { name: 'priceBuy', precision: 10, scale: 2 })
