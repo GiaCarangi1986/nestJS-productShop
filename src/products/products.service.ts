@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not, IsNull } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Product } from 'src/entities/Product';
 import { UpdateCountProductDto } from './dto/updateCount-product.dto';
 
@@ -48,19 +48,11 @@ export class ProductService {
     await this.productsRepository.update(id, { saleFK: value });
   }
 
-  async findForSale() {
-    return this.productsRepository.find({ where: { saleFK: Not(IsNull()) } });
-  }
-
   async updateCount(id: number, count: number) {
     return this.productsRepository.update(id, { count });
   }
 
-  async getAll(): Promise<Product[]> {
-    const products = await this.productsRepository.find({
-      order: { title: 'ASC' },
-    });
-    const serProducts = [];
+  async deleteSaleFK(products: Product[]) {
     for (const product of products) {
       const endTime = product.saleFK?.dateEnd
         ? new Date(product.saleFK?.dateEnd).getTime()
@@ -71,6 +63,22 @@ export class ProductService {
           saleFK: product.saleFK,
         });
       }
+    }
+    return products;
+  }
+
+  async findAllByTitle() {
+    return this.productsRepository.find({
+      order: { title: 'ASC' },
+    });
+  }
+
+  async getAll(): Promise<Product[]> {
+    let products = await this.findAllByTitle();
+    products = await this.deleteSaleFK(products);
+
+    const serProducts = [];
+    for (const product of products) {
       serProducts.push({
         id: product.id,
         title: product.title,

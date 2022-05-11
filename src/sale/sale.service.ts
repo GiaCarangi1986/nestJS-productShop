@@ -66,11 +66,7 @@ export class SaleService {
     const productList = await this.productService.getAllTitles();
     for (const product of productList) {
       for (const productId of saleData.productsID) {
-        if (
-          productId === product.id &&
-          product.saleFK &&
-          product.saleFK.id !== sale.id
-        ) {
+        if (productId === product.id && product.saleFK?.id !== sale?.id) {
           checkProduct.push({
             id: productId,
             title: product.title,
@@ -124,26 +120,32 @@ export class SaleService {
   }
 
   async findAll() {
-    const productData = await this.productService.findForSale();
     const saleData = await this.saleRepository.find({
       order: { dateStart: 'ASC', dateEnd: 'ASC', id: 'ASC' },
     });
 
+    let products = await this.productService.findAllByTitle();
+    products = await this.productService.deleteSaleFK(products);
+
     const serSaleList = [];
     for (const sale of saleData) {
       let productCount = 0;
-      for (const product of productData) {
+      for (const product of products) {
         if (product.saleFK?.id === sale.id) {
           productCount++;
         }
       }
-      serSaleList.push({
-        id: sale.id,
-        dateStart: sale.dateStart,
-        dateEnd: sale.dateEnd,
-        discountPercent: sale.discountPercent,
-        productCount,
-      });
+      if (!productCount) {
+        await this.saleRepository.delete(sale.id);
+      } else {
+        serSaleList.push({
+          id: sale.id,
+          dateStart: sale.dateStart,
+          dateEnd: sale.dateEnd,
+          discountPercent: sale.discountPercent,
+          productCount,
+        });
+      }
     }
 
     return serSaleList;
