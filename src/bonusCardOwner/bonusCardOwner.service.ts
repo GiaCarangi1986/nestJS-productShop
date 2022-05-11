@@ -35,7 +35,7 @@ export class BonusCardOwnerService {
             { id: Not(id), phone },
             { id: Not(id), email },
           ]
-        : [{ id: Not(id), phone }, { id: Not(id) }];
+        : [{ id: Not(id), phone }];
     } else {
       where = email ? [{ phone }, { email }] : [{ phone }];
     }
