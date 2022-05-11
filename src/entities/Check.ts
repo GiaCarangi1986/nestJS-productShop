@@ -23,8 +23,8 @@ export class Check {
   @Column('decimal', { name: 'totalSum', precision: 10, scale: 4 })
   totalSum: number;
 
-  @Column('int', { name: 'bonusCount', nullable: true })
-  bonusCount: number | null;
+  @Column('int', { name: 'bonusCount' })
+  bonusCount: number;
 
   @Column('bit', { name: 'paid' })
   paid: boolean;

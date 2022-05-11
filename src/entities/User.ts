@@ -17,13 +17,13 @@ export class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('varchar', { name: 'FIO', length: 50 })
+  @Column('varchar', { name: 'FIO', length: 150 })
   fio: string;
 
   @Column('varchar', { name: 'password', length: 50 })
   password: string;
 
-  @Column('varchar', { name: 'phone', length: 50 })
+  @Column('varchar', { name: 'phone', length: 11 })
   phone: string;
 
   @Column('varchar', { name: 'email', nullable: true, length: 50 })
