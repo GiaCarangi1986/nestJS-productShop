@@ -58,7 +58,7 @@ export class ProductService {
         ? new Date(product.saleFK?.dateEnd).getTime()
         : null;
       const nowDayDate = new Date();
-      nowDayDate.setHours(0, 0, 0, 0);
+      nowDayDate.setHours(3, 0, 0, 0);
       if (endTime && endTime < nowDayDate.getTime()) {
         product.saleFK = null;
         await this.productsRepository.update(product.id, {
