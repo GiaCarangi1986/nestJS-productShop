@@ -66,7 +66,11 @@ export class UserService {
   async setUserData(user: UserDto, id: number | null) {
     const roleFK = await this.roleService.getById(user.roleFK);
     const adminUser = await this.userRepository.findOne({ where: { roleFK } });
-    if (adminUser.roleFK.title === USER_ROLE.admin) {
+    if (
+      adminUser.roleFK.title === USER_ROLE.admin && id
+        ? adminUser.id !== id
+        : true
+    ) {
       throw {
         message: 'Админ уже создан',
       };
