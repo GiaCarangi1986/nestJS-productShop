@@ -80,7 +80,7 @@ export class CheckLineService {
       for (const product of products) {
         if (line.productFK.id === product.id) {
           product.count += line.productCount;
-          product.cost += line.priceBuy;
+          product.cost += line.priceBuy * line.productCount;
         }
       }
     }
@@ -100,6 +100,7 @@ export class CheckLineService {
       const month = line.checkFK.dateTime.getMonth();
       const year = line.checkFK.dateTime.getFullYear();
       const date = new Date(year, month, day);
+      date.setHours(3, 0, 0, 0);
       for (const resLine of res) {
         if (date.getTime() === new Date(resLine.date).getTime()) {
           contains = true;

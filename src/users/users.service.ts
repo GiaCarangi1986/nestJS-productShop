@@ -65,12 +65,16 @@ export class UserService {
 
   async setUserData(user: UserDto, id: number | null) {
     const roleFK = await this.roleService.getById(user.roleFK);
-    const adminUser = await this.userRepository.findOne({ where: { roleFK } });
-    if (
-      adminUser.roleFK.title === USER_ROLE.admin && id
-        ? adminUser.id !== id
-        : true
-    ) {
+    const currentUser = await this.userRepository.findOne({
+      where: { roleFK },
+    });
+    const admin = await this.userRepository
+      .createQueryBuilder('User')
+      .leftJoinAndSelect('User.roleFK', 'role')
+      .where('role.title = :title', { title: USER_ROLE.admin })
+      .getOne();
+    const isCurrentUserAdmin = id === admin.id;
+    if (currentUser.roleFK.title === USER_ROLE.admin && !isCurrentUserAdmin) {
       throw {
         message: 'Админ уже создан',
       };
