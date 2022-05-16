@@ -83,6 +83,20 @@ export class BonusCardService {
       .where('active = :active', { active: true })
       .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
       .leftJoinAndSelect('BonusCardOwner.genderFK', 'Gender')
+      .andWhere(
+        `LOWER(BonusCardOwner.fio) LIKE :fio
+         OR CONVERT(VARCHAR(20), BonusCard.id) LIKE :id
+          OR LOWER(BonusCardOwner.email) LIKE :email 
+          OR BonusCardOwner.birthDate LIKE :birthDate
+          OR LOWER(Gender.title) LIKE :genderTitle`,
+        {
+          id: `%10%`,
+          fio: `%${'Блинова'.toLowerCase()}%`,
+          email: `%${'@garpix.com'.toLowerCase()}%`,
+          birthDate: `%1995%`,
+          genderTitle: `%${'женс'.toLowerCase()}%`,
+        },
+      )
       .orderBy('BonusCardOwner.fio', 'ASC')
       .getMany();
 
