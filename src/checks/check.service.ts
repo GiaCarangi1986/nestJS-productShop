@@ -36,6 +36,23 @@ export class CheckService {
     private readonly productService: ProductService,
   ) {}
 
+  async turnProduct(id: number) {
+    const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
+      id,
+    );
+    const products: UpdateCountProductDto[] = [];
+
+    for (const line of checkLines) {
+      const data = await this.productService.deltaCount(
+        +line.productFK.id,
+        -1 * line.productCount,
+      );
+      products.push(data);
+    }
+
+    await this.productService.updateArr(products);
+  }
+
   async getAll({
     page,
     pageSize,
@@ -54,6 +71,7 @@ export class CheckService {
     });
 
     for (const check of overdueChecks) {
+      await this.turnProduct(check.id);
       await this.delete(check.id, false);
     }
 
@@ -63,6 +81,7 @@ export class CheckService {
         dateEnd,
       }),
       parentCheckId: null,
+      isCancelled: false,
     };
     if (changedShow) {
       where.changedCheck = changedShow;
@@ -99,7 +118,6 @@ export class CheckService {
     await (async () => {
       if (checkData.changedCheck) {
         // надо прибавить кол-во которое было в пред чеке, чтобы потом спокойно вычесть новое
-        const products: UpdateCountProductDto[] = [];
         prevCheck = await this.checkRepository.findOne(checkData.parentCheckId);
         if (!prevCheck) {
           throw {
@@ -107,18 +125,7 @@ export class CheckService {
           };
         }
 
-        const checkLines: CheckLine[] =
-          await this.checkLineService.getAllByCheckId(prevCheck.id);
-
-        for (const line of checkLines) {
-          const data = await this.productService.deltaCount(
-            +line.productFK.id,
-            -1 * line.productCount,
-          );
-          products.push(data);
-        }
-
-        await this.productService.updateArr(products);
+        await this.turnProduct(prevCheck.id);
       }
     })();
 
@@ -137,6 +144,7 @@ export class CheckService {
     check.paid = checkData.paid;
     check.parentCheckId = null;
     check.totalSum = checkData.totalSum;
+    check.isCancelled = false;
 
     let createdCheck = await this.checkRepository.save(check);
 
@@ -209,6 +217,7 @@ export class CheckService {
     } while (idParam);
 
     for (const idDel of checksForDelete.reverse()) {
+      const checkInfo = await this.checkRepository.findOne(idDel);
       const checkLines: CheckLine[] =
         await this.checkLineService.getAllByCheckId(idDel);
 
@@ -237,10 +246,15 @@ export class CheckService {
           if (needUpdateDeliveryLines) {
             await this.productService.updateArr(products);
           }
-          await this.checkLineService.deleteArr(deleteLines);
+
+          if (!checkInfo.paid) {
+            await this.checkLineService.deleteArr(deleteLines);
+          }
         }
       }
-      await this.checkRepository.delete(idDel);
+      checkInfo.paid
+        ? await this.checkRepository.update(idDel, { isCancelled: true })
+        : await this.checkRepository.delete(idDel);
     }
 
     return id;

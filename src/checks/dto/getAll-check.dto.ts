@@ -23,4 +23,5 @@ export class WhereCheckDto {
   dateTime: FindOperator<Date>;
   changedCheck?: boolean; // был ли чек редактирован
   paid?: boolean; // был ли чек отложен
+  isCancelled?: boolean; // был ли чек удлаен (отменена покупка)
 }

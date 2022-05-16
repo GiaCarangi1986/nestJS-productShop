@@ -29,6 +29,9 @@ export class Check {
   @Column('bit', { name: 'paid' })
   paid: boolean;
 
+  @Column('bit', { name: 'isCancelled' })
+  isCancelled: boolean;
+
   @Column('bit', { name: 'changedCheck' })
   changedCheck: boolean;
 

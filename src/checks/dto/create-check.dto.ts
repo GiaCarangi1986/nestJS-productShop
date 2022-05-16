@@ -25,4 +25,5 @@ export class CreateTableCheckDto {
   paid: boolean;
   parentCheckId: Check | null;
   totalSum: number;
+  isCancelled: boolean;
 }
