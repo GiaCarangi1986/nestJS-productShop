@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
 import {
   CreateBonusCardOwnerDto,
@@ -80,23 +80,27 @@ export class BonusCardService {
   async findAllOwners() {
     const data = await this.bonusCardRepository
       .createQueryBuilder('BonusCard')
-      .where('active = :active', { active: true })
       .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
       .leftJoinAndSelect('BonusCardOwner.genderFK', 'Gender')
+      .where('BonusCard.active = :active', { active: true })
       .andWhere(
-        `LOWER(BonusCardOwner.fio) LIKE :fio
+        `(LOWER(BonusCardOwner.fio) LIKE :fio
          OR CONVERT(VARCHAR(20), BonusCard.id) LIKE :id
-          OR LOWER(BonusCardOwner.email) LIKE :email 
-          OR BonusCardOwner.birthDate LIKE :birthDate
-          OR LOWER(Gender.title) LIKE :genderTitle`,
+          OR LOWER(BonusCardOwner.email) LIKE :email
+          OR CONVERT(VARCHAR, BonusCardOwner.birthDate, 104) LIKE :birthDate
+          OR LOWER(Gender.title) LIKE :genderTitle)`,
         {
-          id: `%10%`,
-          fio: `%${'Блинова'.toLowerCase()}%`,
-          email: `%${'@garpix.com'.toLowerCase()}%`,
-          birthDate: `%1995%`,
-          genderTitle: `%${'женс'.toLowerCase()}%`,
+          id: `%11.11%`,
+          fio: `%${'11.11'.toLowerCase()}%`,
+          email: `%${'11.11'.toLowerCase()}%`,
+          birthDate: `%11.11%`,
+          genderTitle: `%${'11.11'.toLowerCase()}%`,
         },
       )
+      // OR BonusCardOwner.birthDate LIKE :birthDate
+      // .andWhere(new Brackets((qb) => {
+      //   qb.
+      // }))
       .orderBy('BonusCardOwner.fio', 'ASC')
       .getMany();
 
