@@ -6,6 +6,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
 import { USER_ROLE } from 'src/const';
 import { UserDto, UserDBDto } from './dto/create-user.dto';
+import { FiltersQS } from './dto/findAll-user.dto';
 
 import { CheckService } from 'src/checks/check.service';
 import { RoleService } from 'src/role/role.service';
@@ -139,11 +140,32 @@ export class UserService {
     return this.findAllUsers();
   }
 
-  async findAllUsers() {
-    const data = await this.userRepository.find({
-      where: { isDelete: false },
-      order: { fio: 'ASC' },
-    });
+  async findAllUsers(queryParams?: FiltersQS) {
+    const search = queryParams?.search ? queryParams.search : '';
+    const role = queryParams?.role ? queryParams.role : '';
+
+    const roleCondition = role ? `Role.title = '${role}'` : {};
+
+    const data = await this.userRepository
+      .createQueryBuilder('User')
+      .leftJoinAndSelect('User.roleFK', 'Role')
+      .where(
+        `(CONVERT(VARCHAR(20), User.id) LIKE :id
+        OR LOWER(User.fio) LIKE :fio
+        OR LOWER(User.phone) LIKE :phone
+        OR LOWER(User.email) LIKE :email)`,
+        {
+          id: `%${search}%`,
+          fio: `%${search.toLowerCase()}%`,
+          phone: `%${search}%`,
+          email: `%${search.toLowerCase()}%`,
+        },
+      )
+      .andWhere('User.isDelete = :isDelete', { isDelete: false })
+      .andWhere(roleCondition)
+      .orderBy('User.fio', 'ASC')
+      .getMany();
+
     const serUsers = [];
     for (const user of data) {
       serUsers.push({

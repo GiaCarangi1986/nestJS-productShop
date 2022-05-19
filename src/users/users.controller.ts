@@ -15,6 +15,7 @@ import { UserService } from './users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
 import { UserDto } from './dto/create-user.dto';
+import { FiltersQS } from './dto/findAll-user.dto';
 
 @Controller('login')
 export class UserController {
@@ -46,8 +47,9 @@ export class UserCRUDController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async getUsers() {
-    return this.userService.findAllUsers().catch((err) => {
+  async getUsers(@Req() params: any) {
+    const queryParams: FiltersQS = params.query;
+    return this.userService.findAllUsers(queryParams).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
