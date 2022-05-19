@@ -9,10 +9,12 @@ import {
   Patch,
   Post,
   Put,
+  Req,
 } from '@nestjs/common';
 import { BonusCardService } from './bonusCard.service';
 import { GetSearchListBonusCardDto } from './dto/getAllSearch-bonusCard.dto';
 import { CreateBonusCardOwnerDto } from './dto/create-bonusCard.dto';
+import { FiltersQS } from './dto/findAllOwners-bonusCard.dto';
 
 @Controller('bonus_card')
 export class BonusCardController {
@@ -38,8 +40,9 @@ export class BonusCardOwnerController {
   constructor(private readonly bonusCardService: BonusCardService) {}
 
   @Get()
-  async getAllOwners() {
-    return this.bonusCardService.findAllOwners().catch((err) => {
+  async getAllOwners(@Req() params: any) {
+    const queryParams: FiltersQS = params.query;
+    return this.bonusCardService.findAllOwners(queryParams).catch((err) => {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     });
   }

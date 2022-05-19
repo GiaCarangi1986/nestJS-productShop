@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BonusCard } from '../entities/BonusCard';
 import {
   CreateBonusCardOwnerDto,
   CreateBonusCardDBDto,
 } from './dto/create-bonusCard.dto';
+import { FiltersQS } from './dto/findAllOwners-bonusCard.dto';
 
 import { BonusCardOwnerService } from 'src/bonusCardOwner/bonusCardOwner.service';
 
@@ -77,7 +78,9 @@ export class BonusCardService {
     return serBonusCards;
   }
 
-  async findAllOwners() {
+  async findAllOwners(queryParams?: FiltersQS) {
+    const search = queryParams?.search ? queryParams.search : '';
+
     const data = await this.bonusCardRepository
       .createQueryBuilder('BonusCard')
       .leftJoinAndSelect('BonusCard.bonusCardOwnerFK', 'BonusCardOwner')
@@ -87,20 +90,18 @@ export class BonusCardService {
         `(LOWER(BonusCardOwner.fio) LIKE :fio
          OR CONVERT(VARCHAR(20), BonusCard.id) LIKE :id
           OR LOWER(BonusCardOwner.email) LIKE :email
+          OR LOWER(BonusCardOwner.phone) LIKE :phone
           OR CONVERT(VARCHAR, BonusCardOwner.birthDate, 104) LIKE :birthDate
           OR LOWER(Gender.title) LIKE :genderTitle)`,
         {
-          id: `%11.11%`,
-          fio: `%${'11.11'.toLowerCase()}%`,
-          email: `%${'11.11'.toLowerCase()}%`,
-          birthDate: `%11.11%`,
-          genderTitle: `%${'11.11'.toLowerCase()}%`,
+          id: `%${search}%`,
+          fio: `%${search.toLowerCase()}%`,
+          email: `%${search.toLowerCase()}%`,
+          phone: `%${search}%`,
+          birthDate: `%${search}%`,
+          genderTitle: `%${search.toLowerCase()}%`,
         },
       )
-      // OR BonusCardOwner.birthDate LIKE :birthDate
-      // .andWhere(new Brackets((qb) => {
-      //   qb.
-      // }))
       .orderBy('BonusCardOwner.fio', 'ASC')
       .getMany();
 
