@@ -6,7 +6,7 @@ export class GenderController {
   constructor(private readonly saleService: GenderService) {}
 
   @Get()
-  async lastDate() {
+  async getForSelect() {
     return this.saleService.getForSelect().catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });

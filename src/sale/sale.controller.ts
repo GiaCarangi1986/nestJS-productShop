@@ -9,17 +9,20 @@ import {
   Body,
   Patch,
   Put,
+  Req,
 } from '@nestjs/common';
 import { SaleService } from './sale.service';
 import { CreateSaleDto, CreateSaleCheckDto } from './dto/create-sale.dto';
+import { FiltersQS } from './dto/findAll-sale.dto';
 
 @Controller('sale')
 export class SaleController {
   constructor(private readonly saleService: SaleService) {}
 
   @Get()
-  async lastDate() {
-    return this.saleService.findAll().catch((err) => {
+  async findAll(@Req() params: any) {
+    const queryParams: FiltersQS = params.query;
+    return this.saleService.findAll(queryParams).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

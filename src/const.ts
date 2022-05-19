@@ -9,3 +9,9 @@ export const USER_ROLE = {
   main_kassir: 'mainKassir',
   kassir: 'kassir',
 };
+
+export const SALE_KIND_VALUE = {
+  past: 'past',
+  present: 'present',
+  future: 'future',
+};

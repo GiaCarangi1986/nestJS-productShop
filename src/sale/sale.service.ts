@@ -7,6 +7,8 @@ import {
   CreateSaleDBDto,
   CreateSaleCheckDto,
 } from './dto/create-sale.dto';
+import { FiltersQS } from './dto/findAll-sale.dto';
+import { SALE_KIND_VALUE } from 'src/const';
 
 import { ProductService } from 'src/products/products.service';
 
@@ -119,10 +121,40 @@ export class SaleService {
     return this.findAll();
   }
 
-  async findAll() {
-    const saleData = await this.saleRepository.find({
-      order: { dateStart: 'ASC', dateEnd: 'ASC', id: 'ASC' },
-    });
+  async findAll(queryParams?: FiltersQS) {
+    const search = queryParams?.search ? queryParams.search : '';
+    const status = queryParams?.status ? queryParams.status : '';
+    const date = queryParams?.date ? queryParams.date : '';
+
+    const salePresent =
+      status && status === SALE_KIND_VALUE.present
+        ? `(Sale.dateStart <= CONVERT(DATE, '${date}') AND Sale.dateEnd >= CONVERT(DATE, '${date}'))`
+        : {};
+    const saleFuture =
+      status && status === SALE_KIND_VALUE.future
+        ? `Sale.dateStart >= CONVERT(DATE, '${date}')`
+        : {};
+
+    const saleData = await this.saleRepository
+      .createQueryBuilder('Sale')
+      .where(
+        `(CONVERT(VARCHAR(20), Sale.id) LIKE :id
+          OR CONVERT(VARCHAR, Sale.dateStart, 104) LIKE :dateStart
+          OR CONVERT(VARCHAR, Sale.dateEnd, 104) LIKE :dateEnd
+          OR CONVERT(VARCHAR(20), Sale.discountPercent) LIKE :discountPercent)`,
+        {
+          id: `%${search}%`,
+          dateStart: `%${search}%`,
+          dateEnd: `%${search}%`,
+          discountPercent: `%${search}%`,
+        },
+      )
+      .andWhere(salePresent)
+      .andWhere(saleFuture)
+      .orderBy('Sale.dateStart', 'ASC')
+      .addOrderBy('Sale.dateEnd', 'ASC')
+      .addOrderBy('Sale.id', 'ASC')
+      .getMany();
 
     let products = await this.productService.findAllByTitle();
     products = await this.productService.deleteSaleFK(products);

@@ -21,7 +21,7 @@ export class Sale {
   @Column('date', { name: 'dateEnd' })
   dateEnd: Date;
 
-  @Column('int', { name: 'discountPercent', nullable: true })
+  @Column('int', { name: 'discountPercent' })
   discountPercent: number | null;
 
   @OneToMany(() => Product, (product) => product.saleFK)
