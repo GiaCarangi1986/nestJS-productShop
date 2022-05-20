@@ -86,24 +86,16 @@ export class UserService {
       where = user.email
         ? [
             { id: Not(id), phone: user.phone, isDelete: false },
-            { id: Not(id), password: user.password, isDelete: false },
             { id: Not(id), email: user.email, isDelete: false },
           ]
-        : [
-            { id: Not(id), phone: user.phone, isDelete: false },
-            { id: Not(id), password: user.password, isDelete: false },
-          ];
+        : [{ id: Not(id), phone: user.phone, isDelete: false }];
     } else {
       where = user.email
         ? [
             { phone: user.phone, isDelete: false },
-            { password: user.password, isDelete: false },
             { email: user.email, isDelete: false },
           ]
-        : [
-            { phone: user.phone, isDelete: false },
-            { password: user.password, isDelete: false },
-          ];
+        : [{ phone: user.phone, isDelete: false }];
     }
 
     const userExist = await this.userRepository.findOne({ where });
@@ -111,8 +103,8 @@ export class UserService {
     if (userExist) {
       throw {
         message: user.email
-          ? 'Пользователь с такими телефоном и/или email и/или паролем уже существуют'
-          : 'Пользователь с такими телефоном и/или паролем уже существуют',
+          ? 'Пользователь с такими телефоном и/или email уже существует'
+          : 'Пользователь с таким телефоном уже существует',
       };
     }
     const userData: UserDBDto = {
