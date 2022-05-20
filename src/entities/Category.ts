@@ -16,6 +16,9 @@ export class Category {
   @Column('varchar', { name: 'title', length: 100 })
   title: string;
 
+  @Column('bit', { name: 'isDelete' })
+  isDelete: boolean;
+
   @OneToMany(() => Product, (product) => product.categoryFK)
   products: Product[];
 }

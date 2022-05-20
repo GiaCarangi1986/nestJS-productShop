@@ -115,6 +115,7 @@ export class ProductService {
       serProducts.push({
         id: product.id,
         title: product.title,
+        category: product.categoryFK.title,
         manufacturer: product.manufacturerFK?.title || '',
         unit: product.measurementUnitsFK.title,
         count: -1 * product.count,
