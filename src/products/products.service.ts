@@ -45,6 +45,10 @@ export class ProductService {
     return this.productsRepository.find({ where: { saleFK: sale } });
   }
 
+  async getAllWithCategory(category: Category): Promise<Product[]> {
+    return this.productsRepository.find({ where: { categoryFK: category } });
+  }
+
   async updateSale(id: number, value: null | Sale) {
     await this.productsRepository.update(id, { saleFK: value });
   }

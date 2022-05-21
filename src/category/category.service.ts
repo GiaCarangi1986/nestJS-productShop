@@ -74,4 +74,27 @@ export class CategoryService {
 
     return this.findAll();
   }
+
+  async getCategoryData(id: number) {
+    const category = await this.categoryRepository.findOne(id);
+    if (!category) {
+      throw {
+        message: `Нет данных о категории с id = ${id}`,
+      };
+    }
+    const productList = await this.productService.getAllWithCategory(category);
+    const serProductList = [];
+    for (const item of productList) {
+      serProductList.push({
+        id: item.id,
+        title: item.title,
+      });
+    }
+
+    return {
+      id,
+      title: category.title,
+      productList: serProductList,
+    };
+  }
 }

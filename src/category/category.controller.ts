@@ -44,12 +44,12 @@ export class CategoryCRUDController {
     });
   }
 
-  // @Patch(':id') // запрос получение инфы для редактирования пользовтаеля системы
-  // async getUserData(@Param('id') id: number) {
-  //   return await this.userService.getUserData(+id).catch((err) => {
-  //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-  //   });
-  // }
+  @Patch(':id') // запрос получение инфы для редактирования пользовтаеля системы
+  async getCategoryData(@Param('id') id: number) {
+    return await this.categoryService.getCategoryData(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
 
   // @Put(':id') // запрос на редактирование данных
   // async editUserData(@Param('id') id: number, @Body() userData: UserDto) {
