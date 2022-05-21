@@ -12,14 +12,16 @@ import {
   Put,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
+import { FiltersQS } from './dto/findAll-category.dto';
 
 @Controller('category')
 export class CategoryCRUDController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  async getCaterogies() {
-    return this.categoryService.findAll().catch((err) => {
+  async getCaterogies(@Req() params: any) {
+    const queryParams: FiltersQS = params.query;
+    return this.categoryService.findAll(queryParams).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
