@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from 'src/entities/Category';
 import { FiltersQS } from './dto/findAll-category.dto';
-import { CreateCatogoryCheckDto } from './dto/createCheck-category';
+import {
+  CreateCategoryDBDto,
+  CreateCategoryDto,
+  CreateCatogoryCheckDto,
+} from './dto/create-category.dto';
 
 import { ProductService } from 'src/products/products.service';
 
@@ -55,5 +59,19 @@ export class CategoryService {
     }
 
     return checkProduct;
+  }
+
+  async create(categoryData: CreateCategoryDto) {
+    const categoryCreate: CreateCategoryDBDto = {
+      title: categoryData.title.toLowerCase(),
+      isDelete: false,
+    };
+    const category = await this.categoryRepository.save(categoryCreate);
+
+    for (const productId of categoryData.productsID) {
+      await this.productService.updateCategory(productId, category);
+    }
+
+    return this.findAll();
   }
 }

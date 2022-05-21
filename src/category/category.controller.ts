@@ -12,7 +12,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { CreateCatogoryCheckDto } from './dto/createCheck-category';
+import {
+  CreateCatogoryCheckDto,
+  CreateCategoryDto,
+} from './dto/create-category.dto';
 import { FiltersQS } from './dto/findAll-category.dto';
 
 @Controller('category')
@@ -34,12 +37,12 @@ export class CategoryCRUDController {
   //   });
   // }
 
-  // @Post()
-  // async create(@Body() userData: UserDto) {
-  //   return this.userService.create(userData).catch((err) => {
-  //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-  //   });
-  // }
+  @Post()
+  async create(@Body() categoryData: CreateCategoryDto) {
+    return this.categoryService.create(categoryData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
 
   // @Patch(':id') // запрос получение инфы для редактирования пользовтаеля системы
   // async getUserData(@Param('id') id: number) {

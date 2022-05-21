@@ -9,6 +9,7 @@ import { CheckService } from 'src/checks/check.service';
 import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 
 import { Sale } from 'src/entities/Sale';
+import { Category } from 'src/entities/Category';
 
 @Injectable()
 export class ProductService {
@@ -46,6 +47,10 @@ export class ProductService {
 
   async updateSale(id: number, value: null | Sale) {
     await this.productsRepository.update(id, { saleFK: value });
+  }
+
+  async updateCategory(id: number, value: Category) {
+    await this.productsRepository.update(id, { categoryFK: value });
   }
 
   async updateCount(id: number, count: number) {
