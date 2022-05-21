@@ -12,6 +12,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
+import { CreateCatogoryCheckDto } from './dto/createCheck-category';
 import { FiltersQS } from './dto/findAll-category.dto';
 
 @Controller('category')
@@ -53,4 +54,16 @@ export class CategoryCRUDController {
   //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
   //   });
   // }
+}
+
+@Controller('category_check')
+export class CategoryCheckController {
+  constructor(private readonly categoryCheckService: CategoryService) {}
+
+  @Post()
+  async create(@Body() productData: CreateCatogoryCheckDto) {
+    return this.categoryCheckService.createCheck(productData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
 }
