@@ -61,6 +61,22 @@ export class CategoryService {
     return checkProduct;
   }
 
+  async createCheckDelete(id: number) {
+    const category = await this.categoryRepository.findOne(id, {
+      relations: ['products'],
+    });
+    const checkProduct = [];
+
+    for (const product of category.products) {
+      checkProduct.push({
+        id: product.id,
+        title: product.title,
+      });
+    }
+
+    return checkProduct;
+  }
+
   async create(categoryData: CreateCategoryDto) {
     const categoryCreate: CreateCategoryDBDto = {
       title: categoryData.title.toLowerCase(),

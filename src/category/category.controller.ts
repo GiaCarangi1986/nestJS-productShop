@@ -72,4 +72,13 @@ export class CategoryCheckController {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
+
+  @Patch(':id') // запрос проверки удаляемой категории
+  async getCategoryData(@Param('id') id: number) {
+    return await this.categoryCheckService
+      .createCheckDelete(+id)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
+  }
 }
