@@ -51,12 +51,15 @@ export class CategoryCRUDController {
     });
   }
 
-  // @Put(':id') // запрос на редактирование данных
-  // async editUserData(@Param('id') id: number, @Body() userData: UserDto) {
-  //   return await this.userService.update(+id, userData).catch((err) => {
-  //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-  //   });
-  // }
+  @Put(':id') // запрос на редактирование данных
+  async editCategoryData(
+    @Param('id') id: number,
+    @Body() categoryData: CreateCategoryDto,
+  ) {
+    return await this.categoryService.update(+id, categoryData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
 }
 
 @Controller('category_check')

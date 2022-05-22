@@ -41,12 +41,22 @@ export class ProductService {
     return serProducts;
   }
 
+  async getAllProducts() {
+    return this.productsRepository.find();
+  }
+
   async getAllWithSale(sale: Sale): Promise<Product[]> {
-    return this.productsRepository.find({ where: { saleFK: sale } });
+    return this.productsRepository.find({
+      where: { saleFK: sale },
+      order: { title: 'ASC' },
+    });
   }
 
   async getAllWithCategory(category: Category): Promise<Product[]> {
-    return this.productsRepository.find({ where: { categoryFK: category } });
+    return this.productsRepository.find({
+      where: { categoryFK: category },
+      order: { title: 'ASC' },
+    });
   }
 
   async updateSale(id: number, value: null | Sale) {

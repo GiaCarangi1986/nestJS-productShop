@@ -97,4 +97,25 @@ export class CategoryService {
       productList: serProductList,
     };
   }
+
+  async update(id: number, categoryData: CreateCategoryDto) {
+    const categoryUpdate: CreateCategoryDBDto = {
+      title: categoryData.title,
+      isDelete: false,
+    };
+    await this.categoryRepository.update(id, categoryUpdate);
+    const category = await this.categoryRepository.findOne(id);
+
+    const products = await this.productService.getAllProducts();
+
+    for (const product of products) {
+      for (const productId of categoryData.productsID) {
+        if (productId === product.id) {
+          await this.productService.updateCategory(productId, category);
+        }
+      }
+    }
+
+    return this.findAll();
+  }
 }
