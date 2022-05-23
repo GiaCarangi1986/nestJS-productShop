@@ -8,6 +8,7 @@ import {
 import { ProductService } from './products.service';
 
 import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
+import { FiltersQS } from './dto/findAll-product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -39,8 +40,9 @@ export class ProductCRUDController {
   constructor(private readonly productService: ProductService) {}
 
   @Get()
-  async getAll() {
-    return this.productService.getAll().catch((err) => {
+  async getAll(@Req() params: any) {
+    const queryParams: FiltersQS = params.query;
+    return this.productService.findAllCRUD(queryParams).catch((err) => {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     });
   }

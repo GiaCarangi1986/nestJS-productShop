@@ -11,6 +11,7 @@ import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 import { Sale } from 'src/entities/Sale';
 import { Category } from 'src/entities/Category';
 import { Manufacturer } from 'src/entities/Manufacturer';
+import { FiltersQS } from './dto/findAll-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -256,5 +257,57 @@ export class ProductService {
     });
 
     return sortProducts;
+  }
+
+  async findAllCRUD(queryParams?: FiltersQS): Promise<Product[]> {
+    const search = queryParams?.search ? queryParams.search : '';
+
+    const data = await this.productsRepository
+      .createQueryBuilder('Product')
+      .leftJoinAndSelect('Product.categoryFK', 'Category')
+      .leftJoinAndSelect('Product.measurementUnitsFK', 'MeasurementUnits')
+      .leftJoinAndSelect('Product.saleFK', 'Sale')
+      .leftJoinAndSelect('Product.manufacturerFK', 'Manufacturer')
+      .where(
+        `(CONVERT(VARCHAR(20), Product.id) LIKE :id
+          OR LOWER(Product.title) LIKE :title)
+          OR CONVERT(VARCHAR(20), Product.priceNow) LIKE :priceNow
+          OR CONVERT(VARCHAR(20), Product.count) LIKE :count
+          OR CONVERT(VARCHAR(20), Product.expirationDate) LIKE :expirationDate
+          OR LOWER(Category.title) LIKE :titleCategory
+          OR LOWER(MeasurementUnits.title) LIKE :titleMeasurementUnits
+          OR CONVERT(VARCHAR(20), Sale.id) LIKE :idSale
+          OR LOWER(Manufacturer.title) LIKE :titleManufacturer`,
+        {
+          id: `%${search}%`,
+          title: `%${search.toLowerCase()}%`,
+          priceNow: `%${search}%`,
+          count: `%${search}%`,
+          expirationDate: `%${search}%`,
+          titleCategory: `%${search.toLowerCase()}%`,
+          titleMeasurementUnits: `%${search.toLowerCase()}%`,
+          idSale: `%${search}%`,
+          titleManufacturer: `%${search.toLowerCase()}%`,
+        },
+      )
+      .andWhere('Product.isArchive = :isArchive', { isArchive: false })
+      .orderBy('Product.title', 'ASC')
+      .getMany();
+
+    const serData = [];
+    for (const product of data) {
+      serData.push({
+        id: product.id,
+        title: product.title,
+        priceNow: product.priceNow,
+        count: product.count,
+        expirationDate: product.expirationDate,
+        category: product.categoryFK.title,
+        manufacturer: product.manufacturerFK?.title,
+        measurementUnits: product.measurementUnitsFK.title,
+        sale: product.saleFK?.id,
+      });
+    }
+    return serData;
   }
 }
