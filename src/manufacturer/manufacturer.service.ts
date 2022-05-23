@@ -77,4 +77,29 @@ export class ManufacturerService {
 
     return this.findAll();
   }
+
+  async getManufacturerData(id: number) {
+    const manufacturer = await this.manufacturerRepository.findOne(id);
+    if (!manufacturer) {
+      throw {
+        message: `Нет данных о производителе с id = ${id}`,
+      };
+    }
+    const productList = await this.productService.getAllWithManufacturer(
+      manufacturer,
+    );
+    const serProductList = [];
+    for (const item of productList) {
+      serProductList.push({
+        id: item.id,
+        title: item.title,
+      });
+    }
+
+    return {
+      id,
+      title: manufacturer.title,
+      productList: serProductList,
+    };
+  }
 }

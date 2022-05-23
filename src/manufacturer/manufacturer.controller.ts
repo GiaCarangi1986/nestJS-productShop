@@ -44,12 +44,14 @@ export class ManufacturerCRUDController {
     });
   }
 
-  // @Patch(':id') // запрос получение инфы для редактирования пользовтаеля системы
-  // async getCategoryData(@Param('id') id: number) {
-  //   return await this.categoryService.getCategoryData(+id).catch((err) => {
-  //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-  //   });
-  // }
+  @Patch(':id') // запрос получение инфы для редактирования проиводителя
+  async getManufacturerData(@Param('id') id: number) {
+    return await this.manufacturerService
+      .getManufacturerData(+id)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
+  }
 
   // @Put(':id') // запрос на редактирование данных
   // async editCategoryData(

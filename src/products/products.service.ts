@@ -27,11 +27,16 @@ export class ProductService {
   }
 
   async getAllTitles(): Promise<Product[]> {
-    return this.productsRepository.find({ order: { title: 'ASC' } });
+    return this.productsRepository.find({
+      order: { title: 'ASC' },
+      where: { isArchive: false },
+    });
   }
 
   async getAllSales() {
-    const products = await this.productsRepository.find();
+    const products = await this.productsRepository.find({
+      where: { isArchive: false },
+    });
     const serProducts = [];
     for (const product of products) {
       serProducts.push({
@@ -43,19 +48,26 @@ export class ProductService {
   }
 
   async getAllProducts() {
-    return this.productsRepository.find();
+    return this.productsRepository.find({ where: { isArchive: false } });
   }
 
   async getAllWithSale(sale: Sale): Promise<Product[]> {
     return this.productsRepository.find({
-      where: { saleFK: sale },
+      where: { saleFK: sale, isArchive: false },
+      order: { title: 'ASC' },
+    });
+  }
+
+  async getAllWithManufacturer(manufacturer: Manufacturer): Promise<Product[]> {
+    return this.productsRepository.find({
+      where: { manufacturerFK: manufacturer, isArchive: false },
       order: { title: 'ASC' },
     });
   }
 
   async getAllWithCategory(category: Category): Promise<Product[]> {
     return this.productsRepository.find({
-      where: { categoryFK: category },
+      where: { categoryFK: category, isArchive: false },
       order: { title: 'ASC' },
     });
   }
