@@ -84,7 +84,7 @@ export class ProductService {
     await this.productsRepository.update(id, { categoryFK: value });
   }
 
-  async updateManufacturer(id: number, value: Manufacturer) {
+  async updateManufacturer(id: number, value: null | Manufacturer) {
     await this.productsRepository.update(id, { manufacturerFK: value });
   }
 

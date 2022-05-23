@@ -53,15 +53,17 @@ export class ManufacturerCRUDController {
       });
   }
 
-  // @Put(':id') // запрос на редактирование данных
-  // async editCategoryData(
-  //   @Param('id') id: number,
-  //   @Body() categoryData: CreateCategoryDto,
-  // ) {
-  //   return await this.categoryService.update(+id, categoryData).catch((err) => {
-  //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-  //   });
-  // }
+  @Put(':id') // запрос на редактирование данных
+  async editManufacturerData(
+    @Param('id') id: number,
+    @Body() manufacturerData: CreateManufacturerDto,
+  ) {
+    return await this.manufacturerService
+      .update(+id, manufacturerData)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
+  }
 }
 
 @Controller('manufacturer_check')

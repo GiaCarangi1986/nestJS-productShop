@@ -102,4 +102,28 @@ export class ManufacturerService {
       productList: serProductList,
     };
   }
+
+  async update(id: number, manufacturerData: CreateManufacturerDto) {
+    const manufacturerUpdate: CreateManufacturerDBDto = {
+      title: manufacturerData.title,
+      isDelete: false,
+    };
+    await this.manufacturerRepository.update(id, manufacturerUpdate);
+    const manufacturer = await this.manufacturerRepository.findOne(id);
+
+    const products = await this.productService.getAllProducts();
+
+    for (const product of products) {
+      if (product.manufacturerFK?.id === manufacturer.id) {
+        await this.productService.updateManufacturer(product.id, null);
+      }
+      for (const productId of manufacturerData.productsID) {
+        if (productId === product.id) {
+          await this.productService.updateManufacturer(productId, manufacturer);
+        }
+      }
+    }
+
+    return this.findAll();
+  }
 }
