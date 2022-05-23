@@ -15,6 +15,7 @@ import { SaleModule } from './sale/sale.module';
 import { GenderModule } from './gender/gender.module';
 import { RoleModule } from './role/role.module';
 import { CategoryModule } from './category/category.module';
+import { ManufacturerModule } from './manufacturer/manufacturer.module';
 
 import { Check } from './entities/Check';
 import { BonusCard } from './entities/BonusCard';
@@ -73,6 +74,7 @@ import { Manufacturer } from './entities/Manufacturer';
     GenderModule,
     RoleModule,
     CategoryModule,
+    ManufacturerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
