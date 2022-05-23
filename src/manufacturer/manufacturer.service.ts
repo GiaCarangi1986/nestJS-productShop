@@ -126,4 +126,23 @@ export class ManufacturerService {
 
     return this.findAll();
   }
+
+  async delete(id: number) {
+    const manufacturer = await this.manufacturerRepository.findOne(id);
+    if (!manufacturer) {
+      throw {
+        message: `Нет данных о производителе с id = ${id}`,
+      };
+    }
+    const products = await this.productService.getAllWithManufacturer(
+      manufacturer,
+    );
+
+    for (const product of products) {
+      await this.productService.updateManufacturer(product.id, null);
+    }
+
+    await this.manufacturerRepository.update(id, { isDelete: true });
+    return this.findAll();
+  }
 }
