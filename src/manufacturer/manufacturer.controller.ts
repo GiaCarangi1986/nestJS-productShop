@@ -13,7 +13,10 @@ import {
 } from '@nestjs/common';
 import { ManufacturerService } from './manufacturer.service';
 import { FiltersQS } from './dto/findAll-manufacturer.dto';
-import { CreateManufacturerCheckDto } from './dto/create-manufacturer.dto';
+import {
+  CreateManufacturerCheckDto,
+  CreateManufacturerDto,
+} from './dto/create-manufacturer.dto';
 
 @Controller('manufacturer')
 export class ManufacturerCRUDController {
@@ -34,12 +37,12 @@ export class ManufacturerCRUDController {
   //   });
   // }
 
-  // @Post()
-  // async create(@Body() categoryData: CreateCategoryDto) {
-  //   return this.categoryService.create(categoryData).catch((err) => {
-  //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-  //   });
-  // }
+  @Post()
+  async create(@Body() manufacturerData: CreateManufacturerDto) {
+    return this.manufacturerService.create(manufacturerData).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
 
   // @Patch(':id') // запрос получение инфы для редактирования пользовтаеля системы
   // async getCategoryData(@Param('id') id: number) {

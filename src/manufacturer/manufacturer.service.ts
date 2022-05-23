@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Manufacturer } from 'src/entities/Manufacturer';
 import { FiltersQS } from './dto/findAll-manufacturer.dto';
-import { CreateManufacturerCheckDto } from './dto/create-manufacturer.dto';
+import {
+  CreateManufacturerCheckDto,
+  CreateManufacturerDBDto,
+  CreateManufacturerDto,
+} from './dto/create-manufacturer.dto';
 
 import { ProductService } from 'src/products/products.service';
 
@@ -58,5 +62,19 @@ export class ManufacturerService {
     }
 
     return checkProduct;
+  }
+
+  async create(manufacturerData: CreateManufacturerDto) {
+    const manufacturerCreate: CreateManufacturerDBDto = {
+      title: manufacturerData.title.toLowerCase(),
+      isDelete: false,
+    };
+    const category = await this.manufacturerRepository.save(manufacturerCreate);
+
+    for (const productId of manufacturerData.productsID) {
+      await this.productService.updateManufacturer(productId, category);
+    }
+
+    return this.findAll();
   }
 }

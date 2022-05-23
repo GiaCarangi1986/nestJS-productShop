@@ -10,6 +10,7 @@ import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 
 import { Sale } from 'src/entities/Sale';
 import { Category } from 'src/entities/Category';
+import { Manufacturer } from 'src/entities/Manufacturer';
 
 @Injectable()
 export class ProductService {
@@ -69,6 +70,10 @@ export class ProductService {
 
   async updateCategory(id: number, value: Category) {
     await this.productsRepository.update(id, { categoryFK: value });
+  }
+
+  async updateManufacturer(id: number, value: Manufacturer) {
+    await this.productsRepository.update(id, { manufacturerFK: value });
   }
 
   async updateCount(id: number, count: number) {
