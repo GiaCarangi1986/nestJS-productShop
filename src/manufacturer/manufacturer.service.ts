@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Manufacturer } from 'src/entities/Manufacturer';
 import { FiltersQS } from './dto/findAll-manufacturer.dto';
+import { CreateManufacturerCheckDto } from './dto/create-manufacturer.dto';
 
 import { ProductService } from 'src/products/products.service';
 
@@ -32,5 +33,30 @@ export class ManufacturerService {
       .getMany();
 
     return data;
+  }
+
+  async createCheck(manufacturerData: CreateManufacturerCheckDto) {
+    const manufacturer = await this.manufacturerRepository.findOne(
+      manufacturerData.id,
+    );
+    const checkProduct = [];
+    const productList = await this.productService.getAllTitles();
+    for (const product of productList) {
+      for (const productId of manufacturerData.productsID) {
+        if (
+          productId === product.id &&
+          product.manufacturerFK?.id &&
+          product.manufacturerFK?.id !== manufacturer?.id
+        ) {
+          checkProduct.push({
+            id: productId,
+            title: product.title,
+          });
+          break;
+        }
+      }
+    }
+
+    return checkProduct;
   }
 }

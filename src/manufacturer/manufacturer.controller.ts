@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ManufacturerService } from './manufacturer.service';
 import { FiltersQS } from './dto/findAll-manufacturer.dto';
+import { CreateManufacturerCheckDto } from './dto/create-manufacturer.dto';
 
 @Controller('manufacturer')
 export class ManufacturerCRUDController {
@@ -58,23 +59,16 @@ export class ManufacturerCRUDController {
   // }
 }
 
-// @Controller('category_check')
-// export class CategoryCheckController {
-//   constructor(private readonly categoryCheckService: CategoryService) {}
+@Controller('manufacturer_check')
+export class ManufacturerCheckController {
+  constructor(private readonly manufacturerCheckService: ManufacturerService) {}
 
-//   @Post()
-//   async create(@Body() productData: CreateCatogoryCheckDto) {
-//     return this.categoryCheckService.createCheck(productData).catch((err) => {
-//       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-//     });
-//   }
-
-//   @Patch(':id') // запрос проверки удаляемой категории
-//   async getCategoryData(@Param('id') id: number) {
-//     return await this.categoryCheckService
-//       .createCheckDelete(+id)
-//       .catch((err) => {
-//         throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-//       });
-//   }
-// }
+  @Post()
+  async create(@Body() productData: CreateManufacturerCheckDto) {
+    return this.manufacturerCheckService
+      .createCheck(productData)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
+  }
+}
