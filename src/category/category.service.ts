@@ -91,6 +91,24 @@ export class CategoryService {
     return this.findAll();
   }
 
+  async delete(id: number) {
+    const category = await this.categoryRepository.findOne(id, {
+      relations: ['products'],
+    });
+    if (!category) {
+      throw {
+        message: `Нет данных о категории с id = ${id}`,
+      };
+    }
+
+    for (const product of category.products) {
+      await this.productService.archive(product.id);
+    }
+
+    await this.categoryRepository.update(id, { isDelete: true });
+    return this.findAll();
+  }
+
   async getCategoryData(id: number) {
     const category = await this.categoryRepository.findOne(id);
     if (!category) {

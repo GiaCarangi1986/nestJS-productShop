@@ -63,6 +63,10 @@ export class ProductService {
     await this.productsRepository.update(id, { saleFK: value });
   }
 
+  async archive(id: number) {
+    await this.productsRepository.update(id, { isArchive: true });
+  }
+
   async updateCategory(id: number, value: Category) {
     await this.productsRepository.update(id, { categoryFK: value });
   }
@@ -91,6 +95,7 @@ export class ProductService {
   async findAllByTitle() {
     return this.productsRepository.find({
       order: { title: 'ASC' },
+      where: { isArchive: false },
     });
   }
 
@@ -128,6 +133,7 @@ export class ProductService {
       order: {
         title: 'ASC',
       },
+      where: { isArchive: false },
     });
     const serProducts = [];
     for (const product of products) {
@@ -200,7 +206,9 @@ export class ProductService {
       dateEnd,
     );
 
-    const products = await this.productsRepository.find();
+    const products = await this.productsRepository.find({
+      where: { isArchive: false },
+    });
     const serProducts = [];
     for (const product of products) {
       serProducts.push({

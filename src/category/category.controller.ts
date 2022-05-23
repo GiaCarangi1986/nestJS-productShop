@@ -30,12 +30,12 @@ export class CategoryCRUDController {
     });
   }
 
-  // @Delete(':id')
-  // async remove(@Param('id') id: number) {
-  //   return this.userService.delete(+id).catch((err) => {
-  //     throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-  //   });
-  // }
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    return this.categoryService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
 
   @Post()
   async create(@Body() categoryData: CreateCategoryDto) {
