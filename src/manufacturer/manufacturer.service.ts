@@ -64,7 +64,20 @@ export class ManufacturerService {
     return checkProduct;
   }
 
+  async createUpdateCheck(title: string) {
+    const sameCategory = await this.manufacturerRepository.findOne({
+      where: { title },
+    });
+    if (sameCategory) {
+      throw {
+        message: `Производитель с таким наименованием уже существует`,
+      };
+    }
+  }
+
   async create(manufacturerData: CreateManufacturerDto) {
+    await this.createUpdateCheck(manufacturerData.title.toLowerCase());
+
     const manufacturerCreate: CreateManufacturerDBDto = {
       title: manufacturerData.title.toLowerCase(),
       isDelete: false,
@@ -104,6 +117,8 @@ export class ManufacturerService {
   }
 
   async update(id: number, manufacturerData: CreateManufacturerDto) {
+    await this.createUpdateCheck(manufacturerData.title.toLowerCase());
+
     const manufacturerUpdate: CreateManufacturerDBDto = {
       title: manufacturerData.title,
       isDelete: false,

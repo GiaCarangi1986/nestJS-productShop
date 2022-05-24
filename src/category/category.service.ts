@@ -77,7 +77,20 @@ export class CategoryService {
     return checkProduct;
   }
 
+  async createUpdateCheck(title: string) {
+    const sameCategory = await this.categoryRepository.findOne({
+      where: { title },
+    });
+    if (sameCategory) {
+      throw {
+        message: `Категория с таким наименованием уже существует`,
+      };
+    }
+  }
+
   async create(categoryData: CreateCategoryDto) {
+    await this.createUpdateCheck(categoryData.title.toLowerCase());
+
     const categoryCreate: CreateCategoryDBDto = {
       title: categoryData.title.toLowerCase(),
       isDelete: false,
@@ -133,6 +146,8 @@ export class CategoryService {
   }
 
   async update(id: number, categoryData: CreateCategoryDto) {
+    await this.createUpdateCheck(categoryData.title.toLowerCase());
+
     const categoryUpdate: CreateCategoryDBDto = {
       title: categoryData.title,
       isDelete: false,
