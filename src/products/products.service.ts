@@ -270,14 +270,14 @@ export class ProductService {
       .leftJoinAndSelect('Product.manufacturerFK', 'Manufacturer')
       .where(
         `(CONVERT(VARCHAR(20), Product.id) LIKE :id
-          OR LOWER(Product.title) LIKE :title)
+          OR LOWER(Product.title) LIKE :title
           OR CONVERT(VARCHAR(20), Product.priceNow) LIKE :priceNow
           OR CONVERT(VARCHAR(20), Product.count) LIKE :count
           OR CONVERT(VARCHAR(20), Product.expirationDate) LIKE :expirationDate
           OR LOWER(Category.title) LIKE :titleCategory
           OR LOWER(MeasurementUnits.title) LIKE :titleMeasurementUnits
           OR CONVERT(VARCHAR(20), Sale.id) LIKE :idSale
-          OR LOWER(Manufacturer.title) LIKE :titleManufacturer`,
+          OR LOWER(Manufacturer.title) LIKE :titleManufacturer)`,
         {
           id: `%${search}%`,
           title: `%${search.toLowerCase()}%`,
@@ -309,5 +309,16 @@ export class ProductService {
       });
     }
     return serData;
+  }
+
+  async delete(id: number) {
+    const data = await this.productsRepository.findOne(id);
+    if (!data) {
+      throw {
+        message: `Нет данных о товаре с id = ${id}`,
+      };
+    }
+    await this.productsRepository.update(id, { isArchive: true });
+    return this.findAllCRUD();
   }
 }

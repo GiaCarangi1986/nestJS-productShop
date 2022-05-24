@@ -1,8 +1,10 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Req,
 } from '@nestjs/common';
 import { ProductService } from './products.service';
@@ -44,6 +46,13 @@ export class ProductCRUDController {
     const queryParams: FiltersQS = params.query;
     return this.productService.findAllCRUD(queryParams).catch((err) => {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    });
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    return this.productService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }
 }
