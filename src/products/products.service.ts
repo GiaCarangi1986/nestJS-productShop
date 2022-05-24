@@ -318,7 +318,7 @@ export class ProductService {
         message: `Нет данных о товаре с id = ${id}`,
       };
     }
-    await this.productsRepository.update(id, { isArchive: true });
+    await this.productsRepository.update(id, { isArchive: true, saleFK: null });
     return this.findAllCRUD();
   }
 }
