@@ -65,10 +65,10 @@ export class ManufacturerService {
   }
 
   async createUpdateCheck(title: string) {
-    const sameCategory = await this.manufacturerRepository.findOne({
+    const sameManufacturer = await this.manufacturerRepository.findOne({
       where: { title },
     });
-    if (sameCategory) {
+    if (sameManufacturer) {
       throw {
         message: `Производитель с таким наименованием уже существует`,
       };

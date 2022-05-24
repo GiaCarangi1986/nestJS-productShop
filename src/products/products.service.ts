@@ -311,6 +311,21 @@ export class ProductService {
     return serData;
   }
 
+  async createUpdateCheck(
+    title: string,
+    category: Category,
+    manufacturer: Manufacturer,
+  ) {
+    const sameProduct = await this.productsRepository.findOne({
+      where: { title, category, manufacturer },
+    });
+    if (sameProduct) {
+      throw {
+        message: `Продукт с таким названием, категорией и прозводителем уже существует`,
+      };
+    }
+  }
+
   async delete(id: number) {
     const data = await this.productsRepository.findOne(id);
     if (!data) {
