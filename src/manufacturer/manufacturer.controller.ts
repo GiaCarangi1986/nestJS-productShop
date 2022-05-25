@@ -79,3 +79,17 @@ export class ManufacturerCheckController {
       });
   }
 }
+
+@Controller('manufacturer_select')
+export class ManufacturerSelectController {
+  constructor(
+    private readonly manufacturerSelectService: ManufacturerService,
+  ) {}
+
+  @Get()
+  async getAllForSelect() {
+    return this.manufacturerSelectService.getAllForSelect().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+}

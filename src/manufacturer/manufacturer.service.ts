@@ -160,4 +160,19 @@ export class ManufacturerService {
     await this.manufacturerRepository.update(id, { isDelete: true });
     return this.findAll();
   }
+
+  async getAllForSelect() {
+    const manufacturers = await this.manufacturerRepository.find({
+      order: { title: 'ASC' },
+      where: { isDelete: false },
+    });
+    const serData = [];
+    for (const manufacturer of manufacturers) {
+      serData.push({
+        id: manufacturer.id,
+        title: manufacturer.title,
+      });
+    }
+    return serData;
+  }
 }
