@@ -1,16 +1,19 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  Post,
   Req,
 } from '@nestjs/common';
 import { ProductService } from './products.service';
 
 import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 import { FiltersQS } from './dto/findAll-product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
 
 @Controller('product')
 export class ProductController {
@@ -52,6 +55,13 @@ export class ProductCRUDController {
   @Delete(':id')
   async remove(@Param('id') id: number) {
     return this.productService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Post()
+  async create(@Body() productData: CreateProductDto) {
+    return this.productService.create(productData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

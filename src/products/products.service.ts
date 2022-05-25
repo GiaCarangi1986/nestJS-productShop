@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { Product } from 'src/entities/Product';
 import { UpdateCountProductDto } from './dto/updateCount-product.dto';
 
@@ -10,8 +10,10 @@ import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 
 import { Sale } from 'src/entities/Sale';
 import { Category } from 'src/entities/Category';
+import { MeasurementUnits } from 'src/entities/MeasurementUnits';
 import { Manufacturer } from 'src/entities/Manufacturer';
 import { FiltersQS } from './dto/findAll-product.dto';
+import { CreateProductDBDto, CreateProductDto } from './dto/create-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -313,17 +315,63 @@ export class ProductService {
 
   async createUpdateCheck(
     title: string,
-    category: Category,
-    manufacturer: Manufacturer,
+    categoryId: number,
+    manufacturerId: number,
+    measurementUnitsId: number,
   ) {
+    const categoryRep = getRepository(Category);
+    const category = await categoryRep.findOne(categoryId);
+
+    const manufacturerRep = getRepository(Manufacturer);
+    const manufacturer = await manufacturerRep.findOne(manufacturerId);
+
+    const measurementUnitsRep = getRepository(MeasurementUnits);
+    const measurementUnits = await measurementUnitsRep.findOne(
+      measurementUnitsId,
+    );
+
     const sameProduct = await this.productsRepository.findOne({
-      where: { title, category, manufacturer },
+      where: {
+        title,
+        categoryFK: category,
+        manufacturerFK: manufacturer,
+        measurementUnitsFK: measurementUnits,
+      },
     });
     if (sameProduct) {
       throw {
-        message: `Продукт с таким названием, категорией и прозводителем уже существует`,
+        message: `Продукт с таким названием, категорией, прозводителем и ед. измер. уже существует`,
       };
     }
+    return {
+      category,
+      manufacturer,
+      measurementUnits,
+    };
+  }
+
+  async create(productData: CreateProductDto) {
+    const data = await this.createUpdateCheck(
+      productData.title.toLowerCase(),
+      productData.categoryFK,
+      productData.manufacturerFK,
+      productData.measurementUnitsFK,
+    );
+
+    const productCreate: CreateProductDBDto = {
+      title: productData.title.toLowerCase(),
+      priceNow: productData.priceNow,
+      count: 0,
+      expirationDate: productData.expirationDate,
+      maybeOld: productData.maybeOld,
+      categoryFK: data.category,
+      manufacturerFK: data.manufacturer,
+      measurementUnitsFK: data.measurementUnits,
+      isArchive: false,
+      saleFK: null,
+    };
+    await this.productsRepository.save(productCreate);
+    return this.findAllCRUD();
   }
 
   async delete(id: number) {
