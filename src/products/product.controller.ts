@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
 } from '@nestjs/common';
@@ -55,6 +56,13 @@ export class ProductCRUDController {
   @Delete(':id')
   async remove(@Param('id') id: number) {
     return this.productService.delete(+id).catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+
+  @Patch(':id') // запрос получение инфы для редактирования продукта
+  async getProductData(@Param('id') id: number) {
+    return await this.productService.getProductData(+id).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
   }

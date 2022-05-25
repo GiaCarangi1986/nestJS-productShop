@@ -384,4 +384,44 @@ export class ProductService {
     await this.productsRepository.update(id, { isArchive: true, saleFK: null });
     return this.findAllCRUD();
   }
+
+  async getProductData(id: number) {
+    const data = await this.productsRepository.findOne(id);
+    if (!data) {
+      throw {
+        message: `Нет данных о продукте с id = ${id}`,
+      };
+    }
+
+    const categoryRep = getRepository(Category);
+    const category = await categoryRep.findOne(data.categoryFK);
+
+    const manufacturerRep = getRepository(Manufacturer);
+    const manufacturer = await manufacturerRep.findOne(data.manufacturerFK);
+
+    const measurementUnitsRep = getRepository(MeasurementUnits);
+    const measurementUnits = await measurementUnitsRep.findOne(
+      data.measurementUnitsFK,
+    );
+
+    return {
+      id: data.id,
+      title: data.title,
+      priceNow: data.priceNow,
+      maybeOld: data.maybeOld,
+      category: {
+        id: category.id,
+        title: category.title,
+      },
+      manufacturer: {
+        id: manufacturer?.id,
+        title: manufacturer?.title,
+      },
+      measurementUnits: {
+        id: measurementUnits?.id,
+        title: measurementUnits?.title,
+      },
+      expirationDate: data.expirationDate,
+    };
+  }
 }
