@@ -82,3 +82,15 @@ export class CategoryCheckController {
       });
   }
 }
+
+@Controller('category_select')
+export class CategorySelectController {
+  constructor(private readonly categorySelectService: CategoryService) {}
+
+  @Get()
+  async getAllForSelect() {
+    return this.categorySelectService.getAllForSelect().catch((err) => {
+      throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+    });
+  }
+}

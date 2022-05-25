@@ -167,4 +167,19 @@ export class CategoryService {
 
     return this.findAll();
   }
+
+  async getAllForSelect() {
+    const categories = await this.categoryRepository.find({
+      order: { title: 'ASC' },
+      where: { isDelete: false },
+    });
+    const serData = [];
+    for (const category of categories) {
+      serData.push({
+        id: category.id,
+        title: category.title,
+      });
+    }
+    return serData;
+  }
 }
