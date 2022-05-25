@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository, Repository } from 'typeorm';
+import { getRepository, Not, Repository } from 'typeorm';
 import { Product } from 'src/entities/Product';
 import { UpdateCountProductDto } from './dto/updateCount-product.dto';
 
@@ -318,6 +318,7 @@ export class ProductService {
     categoryId: number,
     manufacturerId: number,
     measurementUnitsId: number,
+    id?: number,
   ) {
     const categoryRep = getRepository(Category);
     const category = await categoryRep.findOne(categoryId);
@@ -330,13 +331,23 @@ export class ProductService {
       measurementUnitsId,
     );
 
+    const where = id
+      ? {
+          id: Not(id),
+          title,
+          categoryFK: category,
+          manufacturerFK: manufacturer,
+          measurementUnitsFK: measurementUnits,
+        }
+      : {
+          title,
+          categoryFK: category,
+          manufacturerFK: manufacturer,
+          measurementUnitsFK: measurementUnits,
+        };
+
     const sameProduct = await this.productsRepository.findOne({
-      where: {
-        title,
-        categoryFK: category,
-        manufacturerFK: manufacturer,
-        measurementUnitsFK: measurementUnits,
-      },
+      where,
     });
     if (sameProduct) {
       throw {
@@ -423,5 +434,26 @@ export class ProductService {
       },
       expirationDate: data.expirationDate,
     };
+  }
+
+  async updateAllData(id: number, productData: CreateProductDto) {
+    const data = await this.createUpdateCheck(
+      productData.title.toLowerCase(),
+      productData.categoryFK,
+      productData.manufacturerFK,
+      productData.measurementUnitsFK,
+      id,
+    );
+
+    await this.productsRepository.update(id, {
+      title: productData.title.toLowerCase(),
+      priceNow: productData.priceNow,
+      expirationDate: productData.expirationDate,
+      maybeOld: productData.maybeOld,
+      categoryFK: data.category,
+      manufacturerFK: data.manufacturer,
+      measurementUnitsFK: data.measurementUnits,
+    });
+    return this.findAllCRUD();
   }
 }

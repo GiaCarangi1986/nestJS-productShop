@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Req,
 } from '@nestjs/common';
 import { ProductService } from './products.service';
@@ -72,5 +73,17 @@ export class ProductCRUDController {
     return this.productService.create(productData).catch((err) => {
       throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
     });
+  }
+
+  @Put(':id') // запрос на редактирование данных
+  async editProductData(
+    @Param('id') id: number,
+    @Body() productData: CreateProductDto,
+  ) {
+    return await this.productService
+      .updateAllData(+id, productData)
+      .catch((err) => {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      });
   }
 }
