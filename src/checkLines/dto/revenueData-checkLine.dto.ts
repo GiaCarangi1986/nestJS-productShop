@@ -1,5 +1,5 @@
 export class RevenueDataDto {
-  grossProfit: number;
-  revenue: number;
-  usedBonuses: number;
+  grossProfit?: number;
+  revenue?: number;
+  usedBonuses?: number;
 }

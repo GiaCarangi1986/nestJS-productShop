@@ -182,7 +182,6 @@ export class ProductService {
         id: product.id,
         count: 0,
         cost: 0,
-        averageCost: 0,
       });
     }
     return serProducts;

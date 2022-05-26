@@ -52,21 +52,21 @@ export class CheckLineService {
     });
   }
 
-  calc = (products, line) => {
+  calc = (line) => {
     const resLine: RevenueDataDto = {
-      grossProfit: 0,
       revenue: 0,
       usedBonuses: 0,
     };
-    for (const product of products) {
-      if (product.id === line.productFK.id) {
-        resLine.grossProfit +=
-          (line.price - product.averageCost) * line.productCount;
-        break;
-      }
-    }
     resLine.revenue += line.price * line.productCount;
     resLine.usedBonuses += line.checkFK.bonusCount;
+    return resLine;
+  };
+
+  calcDeliv = (line) => {
+    const resLine: RevenueDataDto = {
+      grossProfit: 0,
+    };
+    resLine.grossProfit += line.priceBuy * line.productCount;
     return resLine;
   };
 
@@ -75,24 +75,35 @@ export class CheckLineService {
       dateStart,
       dateEnd,
     );
-    const products = await this.productService.getAllForRevenueData();
+
+    const resOnlyDateDeliv = new Set();
+
+    const resDeliv = []; // массив, который буду возвращать (сколько дней что-то покупалось за период, столько тут и значений)
     for (const line of deliveryLines) {
-      for (const product of products) {
-        if (line.productFK.id === product.id) {
-          product.count += line.productCount;
-          product.cost += line.priceBuy * line.productCount;
+      let contains = false;
+      const date = new Date(line.deliveryFK.date);
+      for (const resLine of resDeliv) {
+        if (date.getTime() === new Date(resLine.date).getTime()) {
+          contains = true;
+          const resLineCalc = this.calcDeliv(line);
+          resLine.grossProfit += resLineCalc.grossProfit;
+          break;
         }
       }
-    }
-    for (const product of products) {
-      // узнали для каждого продукта его среднюю цену по закупкам на данное число
-      product.averageCost = product.count ? product.cost / product.count : 0;
+      if (!contains) {
+        resOnlyDateDeliv.add(date.getTime());
+        resDeliv.push({
+          date,
+          ...this.calcDeliv(line),
+        });
+      }
     }
 
     const checkLines = await this.checkService.getAllBetweenPeriod(
       dateStart,
       dateEnd,
     );
+
     const res = []; // массив, который буду возвращать (сколько дней что-то покупалось за период, столько тут и значений)
     for (const line of checkLines) {
       let contains = false;
@@ -104,21 +115,38 @@ export class CheckLineService {
       for (const resLine of res) {
         if (date.getTime() === new Date(resLine.date).getTime()) {
           contains = true;
-          const resLineCalc = this.calc(products, line);
-          resLine.grossProfit += resLineCalc.grossProfit;
+          const resLineCalc = this.calc(line);
           resLine.revenue += resLineCalc.revenue;
           resLine.usedBonuses += resLineCalc.usedBonuses;
           break;
         }
       }
       if (!contains) {
+        resOnlyDateDeliv.add(date.getTime());
         res.push({
           date,
-          ...this.calc(products, line),
+          ...this.calc(line),
         });
       }
     }
 
-    return res;
+    const allDates = Array.from(resOnlyDateDeliv).sort();
+    const allRes = [];
+    for (const date of allDates) {
+      const check = res.filter((el) => el.date.getTime() === date)[0];
+      const deliv = resDeliv.filter((el) => el.date.getTime() === date)[0];
+
+      const revenue = check?.revenue || 0;
+      const grossProfit = deliv?.grossProfit || 0;
+
+      allRes.push({
+        date: check?.date || deliv?.date,
+        grossProfit: revenue - grossProfit,
+        revenue,
+        usedBonuses: check?.usedBonuses || 0,
+      });
+    }
+
+    return allRes;
   }
 }
