@@ -304,6 +304,7 @@ export class CheckService {
   ): Promise<CheckLine[]> {
     const checks = await this.checkRepository.find({
       where: {
+        isCancelled: false,
         parentCheckId: null,
         paid: true,
         dateTime: Raw(
