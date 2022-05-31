@@ -323,7 +323,9 @@ export class ProductService {
     const category = await categoryRep.findOne(categoryId);
 
     const manufacturerRep = getRepository(Manufacturer);
-    const manufacturer = await manufacturerRep.findOne(manufacturerId);
+    const manufacturer = manufacturerId
+      ? await manufacturerRep.findOne(manufacturerId)
+      : null;
 
     const measurementUnitsRep = getRepository(MeasurementUnits);
     const measurementUnits = await measurementUnitsRep.findOne(
