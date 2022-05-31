@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Manufacturer } from 'src/entities/Manufacturer';
 import { FiltersQS } from './dto/findAll-manufacturer.dto';
 import {
@@ -64,9 +64,18 @@ export class ManufacturerService {
     return checkProduct;
   }
 
-  async createUpdateCheck(title: string) {
+  async createUpdateCheck(title: string, id?: number) {
+    const where = id
+      ? {
+          id: Not(id),
+          title,
+        }
+      : {
+          title,
+        };
+
     const sameManufacturer = await this.manufacturerRepository.findOne({
-      where: { title },
+      where,
     });
     if (sameManufacturer) {
       throw {
@@ -117,7 +126,7 @@ export class ManufacturerService {
   }
 
   async update(id: number, manufacturerData: CreateManufacturerDto) {
-    await this.createUpdateCheck(manufacturerData.title.toLowerCase());
+    await this.createUpdateCheck(manufacturerData.title.toLowerCase(), id);
 
     const manufacturerUpdate: CreateManufacturerDBDto = {
       title: manufacturerData.title,

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Category } from 'src/entities/Category';
 import { FiltersQS } from './dto/findAll-category.dto';
 import {
@@ -77,9 +77,18 @@ export class CategoryService {
     return checkProduct;
   }
 
-  async createUpdateCheck(title: string) {
+  async createUpdateCheck(title: string, id?: number) {
+    const where = id
+      ? {
+          id: Not(id),
+          title,
+        }
+      : {
+          title,
+        };
+
     const sameCategory = await this.categoryRepository.findOne({
-      where: { title },
+      where,
     });
     if (sameCategory) {
       throw {
@@ -146,7 +155,7 @@ export class CategoryService {
   }
 
   async update(id: number, categoryData: CreateCategoryDto) {
-    await this.createUpdateCheck(categoryData.title.toLowerCase());
+    await this.createUpdateCheck(categoryData.title.toLowerCase(), id);
 
     const categoryUpdate: CreateCategoryDBDto = {
       title: categoryData.title,
