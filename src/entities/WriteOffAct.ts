@@ -15,7 +15,7 @@ export class WriteOffAct {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('int', { name: 'productCount' })
+  @Column('decimal', { name: 'productCount', precision: 10, scale: 2 })
   productCount: number;
 
   @Column('datetime', { name: 'dateTimeWriteOff' })
