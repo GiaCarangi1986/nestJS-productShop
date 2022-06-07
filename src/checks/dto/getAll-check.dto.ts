@@ -25,3 +25,23 @@ export class WhereCheckDto {
   paid?: boolean; // был ли чек отложен
   isCancelled?: boolean; // был ли чек удлаен (отменена покупка)
 }
+
+export class SerializerCheckFromQS {
+  page: number;
+  pageSize: number;
+  changedShow: boolean; // был ли чек редактирован
+  delayedShow: boolean; // был ли чек отложен
+  dateStart: Date;
+  dateEnd: Date;
+}
+
+export class SerializerCheckForDB {
+  id: number;
+  dateTime: Date;
+  kassir: string;
+  totalSum: number;
+  bonusPop: number;
+  paidedCheck: boolean;
+  changedCheck: boolean;
+  mayActions: boolean;
+}

@@ -36,7 +36,7 @@ export class CheckService {
     private readonly productService: ProductService,
   ) {}
 
-  async turnProduct(id: number) {
+  async turnProduct(id: number): Promise<void> {
     const checkLines: CheckLine[] = await this.checkLineService.getAllByCheckId(
       id,
     );
@@ -72,7 +72,7 @@ export class CheckService {
 
     for (const check of overdueChecks) {
       await this.turnProduct(check.id);
-      await this.delete(check.id, false);
+      await this.delete(check.id, true);
     }
 
     const where: WhereCheckDto = {
@@ -217,7 +217,7 @@ export class CheckService {
     } while (idParam);
 
     for (const idDel of checksForDelete.reverse()) {
-      const checkInfo = await this.checkRepository.findOne(idDel);
+      const checkInfo: Check = await this.checkRepository.findOne(idDel);
       const checkLines: CheckLine[] =
         await this.checkLineService.getAllByCheckId(idDel);
 

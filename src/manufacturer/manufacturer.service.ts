@@ -4,6 +4,10 @@ import { Not, Repository } from 'typeorm';
 import { Manufacturer } from 'src/entities/Manufacturer';
 import { FiltersQS } from './dto/findAll-manufacturer.dto';
 import {
+  CreateCheck,
+  GetManufacturerData,
+} from './dto/returnTypes-manufacturer.dto';
+import {
   CreateManufacturerCheckDto,
   CreateManufacturerDBDto,
   CreateManufacturerDto,
@@ -39,7 +43,9 @@ export class ManufacturerService {
     return data;
   }
 
-  async createCheck(manufacturerData: CreateManufacturerCheckDto) {
+  async createCheck(
+    manufacturerData: CreateManufacturerCheckDto,
+  ): Promise<CreateCheck[]> {
     const manufacturer = await this.manufacturerRepository.findOne(
       manufacturerData.id,
     );
@@ -84,7 +90,9 @@ export class ManufacturerService {
     }
   }
 
-  async create(manufacturerData: CreateManufacturerDto) {
+  async create(
+    manufacturerData: CreateManufacturerDto,
+  ): Promise<Manufacturer[]> {
     await this.createUpdateCheck(manufacturerData.title.toLowerCase());
 
     const manufacturerCreate: CreateManufacturerDBDto = {
@@ -100,7 +108,7 @@ export class ManufacturerService {
     return this.findAll();
   }
 
-  async getManufacturerData(id: number) {
+  async getManufacturerData(id: number): Promise<GetManufacturerData> {
     const manufacturer = await this.manufacturerRepository.findOne(id);
     if (!manufacturer) {
       throw {
@@ -125,7 +133,10 @@ export class ManufacturerService {
     };
   }
 
-  async update(id: number, manufacturerData: CreateManufacturerDto) {
+  async update(
+    id: number,
+    manufacturerData: CreateManufacturerDto,
+  ): Promise<Manufacturer[]> {
     await this.createUpdateCheck(manufacturerData.title.toLowerCase(), id);
 
     const manufacturerUpdate: CreateManufacturerDBDto = {
@@ -151,7 +162,7 @@ export class ManufacturerService {
     return this.findAll();
   }
 
-  async delete(id: number) {
+  async delete(id: number): Promise<Manufacturer[]> {
     const manufacturer = await this.manufacturerRepository.findOne(id);
     if (!manufacturer) {
       throw {
@@ -170,7 +181,7 @@ export class ManufacturerService {
     return this.findAll();
   }
 
-  async getAllForSelect() {
+  async getAllForSelect(): Promise<CreateCheck[]> {
     const manufacturers = await this.manufacturerRepository.find({
       order: { title: 'ASC' },
       where: { isDelete: false },

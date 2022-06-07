@@ -1,8 +1,14 @@
 import { Check } from 'src/entities/Check';
-import { GetAllChecksDtoQS } from './dto/getAll-check.dto';
+import {
+  GetAllChecksDtoQS,
+  SerializerCheckFromQS,
+  SerializerCheckForDB,
+} from './dto/getAll-check.dto';
 import { timeOut } from 'src/const';
 
-const serializerCheckForDB = async (check: Check) => ({
+const serializerCheckForDB = async (
+  check: Check,
+): Promise<SerializerCheckForDB> => ({
   id: check.id,
   dateTime: check.dateTime,
   kassir: check.userFK.fio,
@@ -13,7 +19,9 @@ const serializerCheckForDB = async (check: Check) => ({
   mayActions: new Date().getTime() - check.dateTime.getTime() <= timeOut, // Можно редакт и удалять, если прошло не более 3 часов
 });
 
-const serializerCheckFromQS = (check: GetAllChecksDtoQS) => ({
+const serializerCheckFromQS = (
+  check: GetAllChecksDtoQS,
+): SerializerCheckFromQS => ({
   page: +check.page,
   pageSize: +check.pageSize,
   changedShow: check.changedShow === 'true' ? true : false, // был ли чек редактирован
