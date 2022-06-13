@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { getRepository, Not, Repository } from 'typeorm';
 import { User } from '../entities/User';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetBestSellersDtoQS } from './dto/getBestSellers-users.dto';
@@ -9,7 +9,7 @@ import { UserDto, UserDBDto } from './dto/create-user.dto';
 import { FiltersQS } from './dto/findAll-user.dto';
 
 import { CheckService } from 'src/checks/check.service';
-import { RoleService } from 'src/role/role.service';
+import { Role } from 'src/entities/Role';
 
 @Injectable()
 export class UserService {
@@ -19,8 +19,6 @@ export class UserService {
 
     @Inject(forwardRef(() => CheckService))
     private checkService: CheckService,
-
-    private readonly roleService: RoleService,
   ) {}
 
   async getUserData(id: number) {
@@ -60,7 +58,8 @@ export class UserService {
   }
 
   async setUserData(user: UserDto, id: number | null) {
-    const roleFK = await this.roleService.getById(user.roleFK);
+    const roleRep = getRepository(Role);
+    const roleFK = await roleRep.findOne(user.roleFK);
     const currentUser = await this.userRepository.findOne({
       where: { roleFK },
     });

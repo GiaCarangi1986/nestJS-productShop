@@ -8,14 +8,9 @@ import {
   UserCRUDController,
 } from './users.controller';
 import { CheckModule } from 'src/checks/check.module';
-import { RoleModule } from 'src/role/role.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User]),
-    forwardRef(() => CheckModule),
-    RoleModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User]), forwardRef(() => CheckModule)],
   providers: [UserService],
   controllers: [UserController, BestSellersController, UserCRUDController],
 })
