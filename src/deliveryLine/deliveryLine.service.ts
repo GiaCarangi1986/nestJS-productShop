@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { DeliveryLine } from 'src/entities/DeliveryLine';
 import {
   CreateDeliveryLineDBDto,
@@ -9,22 +9,25 @@ import {
 import { GetDeliveryLineDto } from './dto/getAllForMakeDelivery-deliveryLine.dto';
 import { week, day, month, millisecondsDay } from 'src/const';
 
-import { DeliveryService } from 'src/delivery/delivery.service';
 import { ProductService } from 'src/products/products.service';
 import { CheckService } from 'src/checks/check.service';
+import { Delivery } from 'src/entities/Delivery';
 
 @Injectable()
 export class DeliveryLineService {
   constructor(
     @InjectRepository(DeliveryLine)
     private deliveryLineRepository: Repository<DeliveryLine>,
-    private readonly deliveryService: DeliveryService,
     private readonly productService: ProductService,
     private readonly checkService: CheckService,
   ) {}
 
+  deliveryRep = getRepository(Delivery);
+
   async create(deliveryLineData: CreateDeliveryLineDto) {
-    const delivery = await this.deliveryService.create(deliveryLineData.date);
+    const delivery = await this.deliveryRep.save({
+      date: deliveryLineData.date,
+    });
 
     for (const line of deliveryLineData.deliveryLines) {
       const product = await this.productService.getById(line.productFK);
@@ -94,7 +97,8 @@ export class DeliveryLineService {
       product.totalCost = product.count * product.price;
     }
 
-    const latestDate = await this.deliveryService.getLast();
+    const delivers = await this.deliveryRep.find();
+    const latestDate = delivers[delivers.length - 1];
 
     return {
       productList: products,

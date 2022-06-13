@@ -16,15 +16,6 @@ export class DeliveryService {
     return await this.deliveryRepository.findOne(deliveryFK);
   }
 
-  async getLast(): Promise<Delivery> {
-    const delivers = await this.deliveryRepository.find();
-    return delivers[delivers.length - 1];
-  }
-
-  async create(date: Date): Promise<Delivery> {
-    return await this.deliveryRepository.save({ date });
-  }
-
   async getAllBetweenPeriod(
     dateStart: Date,
     dateEnd: Date,
