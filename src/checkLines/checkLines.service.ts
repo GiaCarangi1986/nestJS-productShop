@@ -11,8 +11,6 @@ import { DeliveryService } from 'src/delivery/delivery.service';
 
 import { GetBestSellersDtoQS } from 'src/users/dto/getBestSellers-users.dto';
 
-import { ProductService } from 'src/products/products.service';
-
 @Injectable()
 export class CheckLineService {
   constructor(
@@ -22,8 +20,6 @@ export class CheckLineService {
 
     @Inject(forwardRef(() => CheckService))
     private checkService: CheckService,
-    @Inject(forwardRef(() => ProductService))
-    private productService: ProductService,
   ) {}
 
   async getAllByCheckId(checkFK: number): Promise<CheckLine[]> {
