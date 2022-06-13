@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Raw } from 'typeorm';
+import { Repository, Raw, getRepository } from 'typeorm';
 import { CreateCheckDto, CreateTableCheckDto } from './dto/create-check.dto';
 import { GetAllChecksDto, WhereCheckDto } from './dto/getAll-check.dto';
 import { Check } from '../entities/Check';
@@ -17,7 +17,6 @@ import { BonusCardService } from 'src/bonusCard/bonusCard.service';
 import { CheckLineService } from 'src/checkLines/checkLines.service';
 import { CheckLineCreateDto } from 'src/checkLines/dto/create-checkLine.dto';
 
-import { UserService } from 'src/users/users.service';
 import { CheckLine } from 'src/entities/CheckLine';
 
 import { ProductService } from 'src/products/products.service';
@@ -30,7 +29,6 @@ export class CheckService {
     private checkRepository: Repository<Check>,
     private readonly bonusCardService: BonusCardService,
     private readonly checkLineService: CheckLineService,
-    private readonly userService: UserService,
 
     @Inject(forwardRef(() => ProductService))
     private readonly productService: ProductService,
@@ -133,7 +131,8 @@ export class CheckService {
       ? await this.bonusCardService.findById(checkData.bonusCardFK)
       : null;
 
-    const user: User = await this.userService.findById(checkData.userFK);
+    const userRep = getRepository(User);
+    const user = await userRep.findOne(checkData.userFK);
 
     const check: CreateTableCheckDto = new Check();
     check.bonusCount = checkData.bonusCount;

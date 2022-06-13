@@ -23,11 +23,6 @@ export class UserService {
     private readonly roleService: RoleService,
   ) {}
 
-  async findById(id: number): Promise<User> {
-    const data = await this.userRepository.findOne(id);
-    return data;
-  }
-
   async getUserData(id: number) {
     const user = await this.userRepository.findOne(id);
     const fio = user.fio.split(' ');

@@ -8,7 +8,6 @@ import {
 import { Check } from '../entities/Check';
 import { CheckLineModule } from 'src/checkLines/checkLines.module';
 import { BonusCardModule } from 'src/bonusCard/bonusCard.module';
-import { UserModule } from 'src/users/users.module';
 import { ProductsModule } from 'src/products/product.module';
 
 @Module({
@@ -16,7 +15,6 @@ import { ProductsModule } from 'src/products/product.module';
     TypeOrmModule.forFeature([Check]),
     CheckLineModule,
     BonusCardModule,
-    UserModule,
     forwardRef(() => ProductsModule),
   ],
   providers: [CheckService],

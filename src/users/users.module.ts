@@ -18,6 +18,5 @@ import { RoleModule } from 'src/role/role.module';
   ],
   providers: [UserService],
   controllers: [UserController, BestSellersController, UserCRUDController],
-  exports: [UserService],
 })
 export class UserModule {}
