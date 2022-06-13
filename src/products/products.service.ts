@@ -201,7 +201,7 @@ export class ProductService {
       throw {
         message: `Можно ${action || 'купить'} максимум ${
           productOld.count
-        } шт/кг для '${productOld.title}'`,
+        } шт/кг для "${productOld.title}"`,
       };
     }
 
