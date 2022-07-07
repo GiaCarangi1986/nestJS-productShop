@@ -80,7 +80,7 @@ export class ProductService {
   }
 
   async archive(id: number) {
-    await this.productsRepository.update(id, { isArchive: true });
+    await this.productsRepository.update(id, { isArchive: true, saleFK: null });
   }
 
   async updateCategory(id: number, value: Category) {
